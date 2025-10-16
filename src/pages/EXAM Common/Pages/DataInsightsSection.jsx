@@ -1,0 +1,279 @@
+import React, { useState, useEffect, useRef } from "react";
+import { MathJaxContext } from "better-react-mathjax";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import QuestionRenderer from "./QuestionRenderer";
+
+const DataInsightsSection = ({
+  testName,
+  sectionKey,
+  sectionTitle = "Data Insights",
+  timeForSection = 15 * 60,
+  onSectionComplete,
+  currentSectionIdx,
+  totalSections,
+}) => {
+  const [questions, setQuestions] = useState([]);
+  const [currentIdx, setCurrentIdx] = useState(0);
+  const [selected, setSelected] = useState({});
+  const [showInstruction, setShowInstruction] = useState(true);
+  const [started, setStarted] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(timeForSection);
+  const [preTimer, setPreTimer] = useState(60);
+  const [submitting, setSubmitting] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [timeUp, setTimeUp] = useState(false);
+
+  const timerRef = useRef(null);
+  const preTimerRef = useRef(null);
+  const navigate = useNavigate();
+
+  // Format timer
+  const formatTime = (sec) => {
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+  };
+
+  // Start Section
+  const startSection = async () => {
+    try {
+      const user = JSON.parse(localStorage.getItem("user"));
+      if (!user?.email) throw new Error("Please login first");
+
+      setShowInstruction(false);
+      setStarted(true);
+
+      const res = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/website/exam/adaptive/data-insights`,
+        { params: { email: user.email, examType: "gmat", testName } }
+      );
+
+      if (res.data.status === 1) {
+        setQuestions(res.data.data || []);
+        setCurrentIdx(0);
+
+        const storedAnswers = JSON.parse(localStorage.getItem("dataInsightsAnswers") || "{}");
+        setSelected(storedAnswers || {});
+
+        setTimeLeft(timeForSection);
+        setTimeUp(false);
+      } else {
+        alert(res.data.message || "Failed to load questions");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error loading Data Insights: " + (err.response?.data?.message || err.message));
+    }
+  };
+
+  // Pre-start countdown
+  useEffect(() => {
+    if (!showInstruction) return;
+    preTimerRef.current = setInterval(() => {
+      setPreTimer((prev) => {
+        if (prev <= 1) {
+          clearInterval(preTimerRef.current);
+          startSection();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(preTimerRef.current);
+  }, [showInstruction]);
+
+  // Section Timer
+  useEffect(() => {
+    if (!started) return;
+    clearInterval(timerRef.current);
+    timerRef.current = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(timerRef.current);
+          setTimeUp(true);
+          handleFinalSubmit();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timerRef.current);
+  }, [started]);
+
+  // Handle selection
+  const handleSelect = (promptIdx, optionIdx) => {
+    setSelected((prev) => {
+      const currentQId = questions[currentIdx]?.id;
+      const updated = {
+        ...prev,
+        [currentQId]: {
+          ...(prev[currentQId] || {}),
+          [promptIdx]: optionIdx,
+        },
+      };
+      localStorage.setItem("dataInsightsAnswers", JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  // Next Question / Final Submission
+  const handleNext = async () => {
+    const currentQ = questions[currentIdx];
+    const currentSelected = selected[currentQ.id] || {};
+
+    if (currentQ.prompts && Object.keys(currentSelected).length < currentQ.prompts.length) {
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 2000);
+      return;
+    }
+
+    if (currentIdx + 1 < questions.length) {
+      setCurrentIdx((prev) => prev + 1);
+    } else {
+      await handleFinalSubmit();
+    }
+  };
+
+  // Final submit
+const handleFinalSubmit = async () => {
+  try {
+    if (submitting) return;
+    setSubmitting(true);
+
+    const user = JSON.parse(localStorage.getItem("user"));
+    const storedAnswers = JSON.parse(localStorage.getItem("dataInsightsAnswers") || "{}");
+
+    // Prepare answers array exactly as localStorage
+    const answersArray = Object.keys(storedAnswers).map((qId) => {
+      const val = storedAnswers[qId];
+      
+      // Agar object hai (multi-prompt), array bana lo
+      if (typeof val === "object" && !Array.isArray(val)) {
+        const arr = Object.keys(val).map((k) => val[k]);
+        return { questionId: parseInt(qId), selected: arr };
+      } else {
+        // Single prompt, number or string as-is
+        return { questionId: parseInt(qId), selected: val };
+      }
+    });
+
+    await axios.post(
+      `${import.meta.env.VITE_BASE_URL}/website/exam/adaptive/data-insights/submit`,
+      {
+        email: user?.email,
+        examType: "gmat",
+        testName,
+        answers: answersArray,
+      }
+    );
+
+    localStorage.removeItem("dataInsightsAnswers");
+    setStarted(false);
+    onSectionComplete?.();
+    navigate("/profile");
+  } catch (err) {
+    console.error("Final submit error:", err);
+    alert("Failed to submit answers. Try again.");
+  } finally {
+    setSubmitting(false);
+  }
+};
+
+
+  // Instruction Screen
+  if (showInstruction) {
+    return (
+      <>
+        <div className="w-full bg-blue-600 text-white py-3 px-6 shadow-md text-center font-semibold text-lg">
+          Section {currentSectionIdx + 1} of {totalSections} — {sectionTitle}
+        </div>
+        <div className="min-h-screen flex flex-col font-sans bg-slate-50">
+          <div className="bg-white p-8 rounded-xl shadow-md max-w-3xl mx-auto my-8">
+            <h2 className="text-2xl font-semibold text-slate-800">{sectionTitle} Section Instructions</h2>
+            <div className="text-red-600 font-semibold text-lg mt-2">
+              Time to begin: {preTimer} sec
+            </div>
+            <div className="my-6 leading-relaxed text-slate-700">
+              <h3 className="text-xl font-semibold text-blue-800 mt-6">Section Overview</h3>
+              <p className="mt-2">This section contains data insights questions.</p>
+              <h3 className="text-xl font-semibold text-blue-800 mt-6">Question Types</h3>
+              <ul className="list-disc pl-6 mt-3 space-y-2">
+                <li>Graphics Interpretation</li>
+                <li>Two-Part Analysis</li>
+                <li>Data Sufficiency</li>
+                <li>Table Analysis</li>
+                <li>Multi-Source Reasoning</li>
+              </ul>
+            </div>
+            <button
+              onClick={startSection}
+              className="bg-blue-600 text-white font-semibold text-base py-3 px-6 rounded-md w-full max-w-xs mx-auto block mt-8 hover:bg-blue-800 transition-colors"
+            >
+              Begin {sectionTitle} <span><FontAwesomeIcon icon={faArrowRight} beatFade /></span>
+            </button>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  // Question Screen
+  const currentQ = questions[currentIdx];
+
+  return (
+    <MathJaxContext>
+      <div className="bg-gray-100 flex flex-col min-h-screen pb-20">
+        {/* Header */}
+        <header className="w-full bg-blue-600 text-white p-2 px-7 flex justify-between items-center shadow-md text-center font-semibold text-lg">
+          <div>
+            <span>{sectionTitle} — Q{currentIdx + 1}</span>
+          </div>
+          <div className="flex items-center gap-2 bg-blue-50 px-4 py-1.5 rounded-full font-semibold text-blue-800 shadow-inner border border-blue-200">
+            <span>⏱</span>
+            <span className="font-mono">{formatTime(timeLeft)}</span>
+          </div>
+        </header>
+
+        {/* Question */}
+        <div className="max-w-4xl mx-auto mt-6 bg-white rounded-xl shadow-md p-8">
+          {currentQ && (
+            <QuestionRenderer
+              question={currentQ}
+              selected={selected[currentQ.id] || {}}
+              setSelected={handleSelect}
+            />
+          )}
+        </div>
+
+        {/* Next Button */}
+        <div className="fixed bottom-4 right-[60px]">
+          <button
+            onClick={handleNext}
+            className="px-8 py-2.5 mb-[25px] rounded-full font-semibold bg-green-600 text-white hover:bg-green-700"
+          >
+            {currentIdx === questions.length - 1 ? "Finish" : "Next"}
+          </button>
+        </div>
+
+        {/* Toast */}
+        {showToast && (
+          <div className="fixed bottom-24 right-8 bg-red-500 text-white p-3 rounded-md shadow-md">
+            Please select all answers before proceeding
+          </div>
+        )}
+        {timeUp && (
+          <div className="fixed bottom-24 right-8 bg-orange-500 text-white p-3 rounded-md shadow-md">
+            ⏰ Time's up! Auto-submitting...
+          </div>
+        )}
+      </div>
+    </MathJaxContext>
+  );
+};
+
+export default DataInsightsSection;

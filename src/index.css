@@ -1,0 +1,37 @@
+@import "tailwindcss";
+/* Add in your global CSS (e.g., index.css) */
+@keyframes secure-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.secure-spinner {
+  width: 38px;
+  height: 38px;
+  border: 3px solid #e0e7ff;
+  border-top: 3px solid #4f46e5;
+  border-radius: 50%;
+  animation: secure-spin 0.9s linear infinite;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.25s ease-out forwards;
+}
+/* ✅ Disable text selection globally */
+* {
+  user-select: none;          /* Prevent text selection */
+  -webkit-user-select: none;  /* For Safari */
+  -moz-user-select: none;     /* For Firefox */
+  -ms-user-select: none;      /* For older IE */
+}
+
+/* ✅ Remove blue highlight / typing line */
+*:focus {
+  outline: none !important;     /* Remove focus outline */
+  box-shadow: none !important;  /* Remove shadow if any */
+}
