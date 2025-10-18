@@ -84,20 +84,20 @@ function AppWrapper() {
         <Route path="/" element={<Home onLogin={() => setShowLogin(true)} />} />
 
         {/* Courses */}
-        <Route path="/courses/bba&bms" element={<ProtectedRoute><BBABMS /></ProtectedRoute>} />
-        <Route path="/courses/sat" element={<ProtectedRoute><SAT /></ProtectedRoute>} />
-        <Route path="/courses/lnat" element={<ProtectedRoute><LNAT /></ProtectedRoute>} />
-        <Route path="/courses/lsat" element={<ProtectedRoute><LSAT /></ProtectedRoute>} />
-        <Route path="/courses/gmat" element={<ProtectedRoute><GMAT /></ProtectedRoute>} />
-        <Route path="/courses/gre" element={<ProtectedRoute><GRE /></ProtectedRoute>} />
+        <Route path="/mock/bba&bms" element={<ProtectedRoute><BBABMS /></ProtectedRoute>} />
+        <Route path="/mock/sat" element={<ProtectedRoute><SAT /></ProtectedRoute>} />
+        <Route path="/mock/lnat" element={<ProtectedRoute><LNAT /></ProtectedRoute>} />
+        <Route path="/mock/lsat" element={<ProtectedRoute><LSAT /></ProtectedRoute>} />
+        <Route path="/mock/gmat" element={<ProtectedRoute><GMAT /></ProtectedRoute>} />
+        <Route path="/mock/gre" element={<ProtectedRoute><GRE /></ProtectedRoute>} />
 
         {/* Mock Tests */}
-        <Route path="/mock/npat" element={<ProtectedRoute><NPAT /></ProtectedRoute>} />
-        <Route path="/mock/aat" element={<ProtectedRoute><AAT /></ProtectedRoute>} />
-        <Route path="/mock/feat" element={<ProtectedRoute><FEAT /></ProtectedRoute>} />
-        <Route path="/mock/lsat" element={<ProtectedRoute><MockLSAT /></ProtectedRoute>} />
-        <Route path="/mock/gmat" element={<ProtectedRoute><MockGMAT /></ProtectedRoute>} />
-        <Route path="/mock/gre" element={<ProtectedRoute><MockGRE /></ProtectedRoute>} />
+        <Route path="/courses/npat" element={<ProtectedRoute><NPAT /></ProtectedRoute>} />
+        <Route path="/courses/aat" element={<ProtectedRoute><AAT /></ProtectedRoute>} />
+        <Route path="/courses/feat" element={<ProtectedRoute><FEAT /></ProtectedRoute>} />
+        <Route path="/courses/lsat" element={<ProtectedRoute><MockLSAT /></ProtectedRoute>} />
+        <Route path="/courses/gmat" element={<ProtectedRoute><MockGMAT /></ProtectedRoute>} />
+        <Route path="/courses/gre" element={<ProtectedRoute><MockGRE /></ProtectedRoute>} />
 
         {/* Instructions & Exam */}
         <Route path="/mock/gmat/instructions" element={<ProtectedRoute><Instructions /></ProtectedRoute>} />

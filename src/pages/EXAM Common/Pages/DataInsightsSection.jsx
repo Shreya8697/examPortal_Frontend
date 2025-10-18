@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import QuestionRenderer from "./QuestionRenderer";
+import Calculator from "../../Exams/Calculator";
 
 const DataInsightsSection = ({
   testName,
@@ -25,19 +26,30 @@ const DataInsightsSection = ({
   const [submitting, setSubmitting] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [timeUp, setTimeUp] = useState(false);
+  const [finished, setFinished] = useState(false);
+  const [showCalc, setShowCalc] = useState(false);
 
   const timerRef = useRef(null);
   const preTimerRef = useRef(null);
+  
   const navigate = useNavigate();
+  
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      e.preventDefault();
+      e.returnValue =
+        "You are not allowed to refresh this page before starting the exam!";
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, []);
 
-  // Format timer
   const formatTime = (sec) => {
     const m = Math.floor(sec / 60);
     const s = sec % 60;
     return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
   };
 
-  // Start Section
   const startSection = async () => {
     try {
       const user = JSON.parse(localStorage.getItem("user"));
@@ -69,7 +81,6 @@ const DataInsightsSection = ({
     }
   };
 
-  // Pre-start countdown
   useEffect(() => {
     if (!showInstruction) return;
     preTimerRef.current = setInterval(() => {
@@ -86,7 +97,6 @@ const DataInsightsSection = ({
     return () => clearInterval(preTimerRef.current);
   }, [showInstruction]);
 
-  // Section Timer
   useEffect(() => {
     if (!started) return;
     clearInterval(timerRef.current);
@@ -105,7 +115,6 @@ const DataInsightsSection = ({
     return () => clearInterval(timerRef.current);
   }, [started]);
 
-  // Handle selection
   const handleSelect = (promptIdx, optionIdx) => {
     setSelected((prev) => {
       const currentQId = questions[currentIdx]?.id;
@@ -121,7 +130,6 @@ const DataInsightsSection = ({
     });
   };
 
-  // Next Question / Final Submission
   const handleNext = async () => {
     const currentQ = questions[currentIdx];
     const currentSelected = selected[currentQ.id] || {};
@@ -139,60 +147,50 @@ const DataInsightsSection = ({
     }
   };
 
-  // Final submit
-const handleFinalSubmit = async () => {
-  try {
-    if (submitting) return;
-    setSubmitting(true);
+  const handleFinalSubmit = async () => {
+    try {
+      if (submitting) return;
 
-    const user = JSON.parse(localStorage.getItem("user"));
-    const storedAnswers = JSON.parse(localStorage.getItem("dataInsightsAnswers") || "{}");
+      setSubmitting(true);
 
-    // Prepare answers array exactly as localStorage
-    const answersArray = Object.keys(storedAnswers).map((qId) => {
-      const val = storedAnswers[qId];
-      
-      // Agar object hai (multi-prompt), array bana lo
-      if (typeof val === "object" && !Array.isArray(val)) {
-        const arr = Object.keys(val).map((k) => val[k]);
-        return { questionId: parseInt(qId), selected: arr };
-      } else {
-        // Single prompt, number or string as-is
-        return { questionId: parseInt(qId), selected: val };
-      }
-    });
+      const user = JSON.parse(localStorage.getItem("user"));
+      const storedAnswers = JSON.parse(localStorage.getItem("dataInsightsAnswers") || "{}");
 
-    await axios.post(
-      `${import.meta.env.VITE_BASE_URL}/website/exam/adaptive/data-insights/submit`,
-      {
-        email: user?.email,
-        examType: "gmat",
-        testName,
-        answers: answersArray,
-      }
-    );
+      const answersArray = Object.keys(storedAnswers).map((qId) => {
+        const val = storedAnswers[qId];
+        if (typeof val === "object" && !Array.isArray(val)) {
+          const arr = Object.keys(val).map((k) => val[k]);
+          return { questionId: parseInt(qId), selected: arr };
+        } else {
+          return { questionId: parseInt(qId), selected: val };
+        }
+      });
 
-    localStorage.removeItem("dataInsightsAnswers");
-    setStarted(false);
-    onSectionComplete?.();
-    navigate("/profile");
-  } catch (err) {
-    console.error("Final submit error:", err);
-    alert("Failed to submit answers. Try again.");
-  } finally {
-    setSubmitting(false);
-  }
-};
+      await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/website/exam/adaptive/data-insights/submit`,
+        { email: user?.email, examType: "gmat", testName, answers: answersArray }
+      );
 
+      localStorage.removeItem("dataInsightsAnswers");
+      setStarted(false);
+      setFinished(true);
+      onSectionComplete?.();
+    } catch (err) {
+      console.error("Final submit error:", err);
+      alert("Failed to submit answers. Try again.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   // Instruction Screen
   if (showInstruction) {
     return (
       <>
-        <div className="w-full bg-blue-600 text-white py-3 px-6 shadow-md text-center font-semibold text-lg">
+        <div className="w-full bg-blue-600 text-white py-3   shadow-md text-center font-semibold text-lg">
           Section {currentSectionIdx + 1} of {totalSections} — {sectionTitle}
         </div>
-        <div className="min-h-screen flex flex-col font-sans bg-slate-50">
+        <div className="min-h-screen  flex-col font-sans bg-slate-50">
           <div className="bg-white p-8 rounded-xl shadow-md max-w-3xl mx-auto my-8">
             <h2 className="text-2xl font-semibold text-slate-800">{sectionTitle} Section Instructions</h2>
             <div className="text-red-600 font-semibold text-lg mt-2">
@@ -214,7 +212,7 @@ const handleFinalSubmit = async () => {
               onClick={startSection}
               className="bg-blue-600 text-white font-semibold text-base py-3 px-6 rounded-md w-full max-w-xs mx-auto block mt-8 hover:bg-blue-800 transition-colors"
             >
-              Begin {sectionTitle} <span><FontAwesomeIcon icon={faArrowRight} beatFade /></span>
+              Begin {sectionTitle} <FontAwesomeIcon icon={faArrowRight} beatFade />
             </button>
           </div>
         </div>
@@ -222,17 +220,43 @@ const handleFinalSubmit = async () => {
     );
   }
 
-  // Question Screen
+  // Finish Screen
+  if (finished) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 p-6">
+        <div className="bg-white shadow-lg rounded-2xl p-10 max-w-xl w-full text-center border-t-4 border-blue-600">
+          <h1 className="text-3xl font-bold text-blue-700 mb-3">Exam Completed!</h1>
+          <p className="text-slate-700 text-lg mb-6">
+            You have successfully finished the GMAT Test.  
+            Your answers have been securely submitted.
+          </p>
+          
+          <button
+            onClick={() => navigate("/activity")}
+            className="bg-green-600 text-white px-6 py-3 rounded-md font-semibold text-lg hover:bg-green-700 transition-all"
+          >
+            View Result
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   const currentQ = questions[currentIdx];
 
   return (
     <MathJaxContext>
-      <div className="bg-gray-100 flex flex-col min-h-screen pb-20">
+      <div className="bg-gray-100 flex flex-col pb-20">
         {/* Header */}
         <header className="w-full bg-blue-600 text-white p-2 px-7 flex justify-between items-center shadow-md text-center font-semibold text-lg">
-          <div>
-            <span>{sectionTitle} — Q{currentIdx + 1}</span>
-          </div>
+          <div>{sectionTitle} — Q{currentIdx + 1}</div>
+          <button
+  onClick={() => setShowCalc(true)}
+  className="bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-full px-5 py-2.5 shadow-md transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-teal-400 focus:ring-offset-2"
+>
+  Open Calculator
+</button>
+
           <div className="flex items-center gap-2 bg-blue-50 px-4 py-1.5 rounded-full font-semibold text-blue-800 shadow-inner border border-blue-200">
             <span>⏱</span>
             <span className="font-mono">{formatTime(timeLeft)}</span>
@@ -240,7 +264,7 @@ const handleFinalSubmit = async () => {
         </header>
 
         {/* Question */}
-        <div className="max-w-4xl mx-auto mt-6 bg-white rounded-xl shadow-md p-8">
+        <div className=" mx-auto mt-3  rounded-xl shadow-md p-8">
           {currentQ && (
             <QuestionRenderer
               question={currentQ}
@@ -250,19 +274,24 @@ const handleFinalSubmit = async () => {
           )}
         </div>
 
-        {/* Next Button */}
-        <div className="fixed bottom-4 right-[60px]">
+        {/* Footer Button */}
+        <div className="fixed bottom-0 left-0 right-0 bg-white py-4 shadow-[0_-2px_10px_rgba(0,0,0,0.1)] flex justify-center z-[100]">
           <button
             onClick={handleNext}
-            className="px-8 py-2.5 mb-[25px] rounded-full font-semibold bg-green-600 text-white hover:bg-green-700"
+            disabled={submitting}
+            className={`px-8 py-3 rounded-full font-semibold transition-colors ${
+              submitting
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-green-600 text-white hover:bg-green-700"
+            }`}
           >
-            {currentIdx === questions.length - 1 ? "Finish" : "Next"}
+            {currentIdx === questions.length - 1 ? (submitting ? "Submitting..." : "Finish") : "Next"}
           </button>
         </div>
 
         {/* Toast */}
         {showToast && (
-          <div className="fixed bottom-24 right-8 bg-red-500 text-white p-3 rounded-md shadow-md">
+          <div className="fixed bottom-24  right-8 bg-blue-500 text-white p-3 rounded-md shadow-md">
             Please select all answers before proceeding
           </div>
         )}
@@ -271,6 +300,18 @@ const handleFinalSubmit = async () => {
             ⏰ Time's up! Auto-submitting...
           </div>
         )}
+
+        {/* Simple Full-Page Loader */}
+        {submitting && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20">
+            <div className="bg-white px-6 py-3 rounded-md shadow-md font-semibold text-gray-800">
+              Submitting...
+            </div>
+          </div>
+        )}
+
+        {/* Calculator */}
+        {showCalc && <Calculator onClose={() => setShowCalc(false)} />}
       </div>
     </MathJaxContext>
   );

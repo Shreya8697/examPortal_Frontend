@@ -21,7 +21,7 @@ const VerbalSection = ({
   const [showInstruction, setShowInstruction] = useState(true);
   const [started, setStarted] = useState(false);
   const [timeLeft, setTimeLeft] = useState(timeForSection);
-  const [preTimer, setPreTimer] = useState(10);
+  const [preTimer, setPreTimer] = useState(60);
   const [showToast, setShowToast] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [sessionIdState, setSessionIdState] = useState(sessionId || null);
@@ -95,6 +95,16 @@ const VerbalSection = ({
     }, 1000);
     return () => clearInterval(preTimerRef.current);
   }, [showInstruction]);
+  
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      e.preventDefault();
+      e.returnValue =
+        "You are not allowed to refresh this page before starting the exam!";
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, []);
 
   // ⏱ Section Timer
   useEffect(() => {
@@ -154,20 +164,17 @@ const VerbalSection = ({
       });
 
       if (res.data.finished || !res.data.nextQuestion) {
-        // ✅ Last question → finish section
         await axios.post(`${import.meta.env.VITE_BASE_URL}/website/exam/adaptive/finish`, {
           sessionId: sessionIdState,
           section: sectionKey,
           autoSubmit: false,
         });
-
         clearInterval(timerRef.current);
         setStarted(false);
         onSectionComplete?.();
         return;
       }
 
-      // 📝 Next question
       const nq = res.data.nextQuestion || {};
       setQuestion({
         id: nq.id ?? null,
@@ -306,7 +313,7 @@ const VerbalSection = ({
 
         {/* Toasts */}
         {showToast && (
-          <div className="fixed bottom-20 right-8 bg-red-600 text-white px-4 py-2 rounded shadow-lg">
+          <div className="fixed bottom-24 right-8 bg-blue-600 text-white px-4 py-2 rounded shadow-lg">
             Please select an option before proceeding
           </div>
         )}

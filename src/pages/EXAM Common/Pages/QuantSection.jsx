@@ -21,26 +21,35 @@ const QuantSection = ({
   const [showInstruction, setShowInstruction] = useState(true);
   const [started, setStarted] = useState(false);
   const [timeLeft, setTimeLeft] = useState(timeForSection);
-  const [preTimer, setPreTimer] = useState(600); // ⏱ 1 minute pre-start timer
+  const [preTimer, setPreTimer] = useState(60);
   const [submitting, setSubmitting] = useState(false);
   const [sessionIdState, setSessionIdState] = useState(sessionId || null);
+  const [showToast, setShowToast] = useState(false); // ✅ Toast state
 
   const preTimerRef = useRef(null);
   const timerRef = useRef(null);
 
-  // ✅ Keep local session state in sync with parent
+  
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      e.preventDefault();
+      e.returnValue =
+        "You are not allowed to refresh this page before starting the exam!";
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, []);
+
   useEffect(() => {
     setSessionIdState(sessionId || null);
   }, [sessionId]);
 
-  // 🧠 Format timer helper
   const formatTime = (sec) => {
     const m = Math.floor(sec / 60);
     const s = sec % 60;
     return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
   };
 
-  // 🚀 Start Section (API + first question)
   const startSection = async () => {
     try {
       const user = JSON.parse(localStorage.getItem("user"));
@@ -84,20 +93,19 @@ const QuantSection = ({
     } catch (err) {
       console.error(err);
       alert(
-        "Error starting quant section: " +
+        
           (err.response?.data?.message || err.message)
       );
     }
   };
 
-  // ⏱ Pre-start timer on Instruction Screen
   useEffect(() => {
     if (!showInstruction) return;
     preTimerRef.current = setInterval(() => {
       setPreTimer((prev) => {
         if (prev <= 1) {
           clearInterval(preTimerRef.current);
-          startSection(); // Auto start when timer ends
+          startSection();
           return 0;
         }
         return prev - 1;
@@ -107,7 +115,6 @@ const QuantSection = ({
     return () => clearInterval(preTimerRef.current);
   }, [showInstruction]);
 
-  // ⏱ Section TIMER
   useEffect(() => {
     if (!started) return;
     clearInterval(timerRef.current);
@@ -124,10 +131,8 @@ const QuantSection = ({
     }, 1000);
 
     return () => clearInterval(timerRef.current);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [started]);
 
-  // 🚨 Auto submit when time is up
   const handleAutoSubmit = async () => {
     try {
       await axios.post(
@@ -145,13 +150,12 @@ const QuantSection = ({
     }
   };
 
-  // ✅ Select option
   const handleSelect = (idx) => setSelected(idx);
 
-  // 📝 Submit current question
   const handleSubmit = async () => {
     if (selected === null) {
-      alert("Please select an option");
+      setShowToast(true); // ✅ Show toast instead of alert
+      setTimeout(() => setShowToast(false), 2000);
       return;
     }
 
@@ -193,69 +197,62 @@ const QuantSection = ({
     }
   };
 
-  // ===========================
-  // 📌 Instruction Screen
-  // ===========================
   if (showInstruction) {
     return (
-     <> <div className="w-full bg-blue-600 text-white py-3 px-6 shadow-md text-center font-semibold text-lg">
-  Section {currentSectionIdx + 1} of {totalSections} — {sectionTitle}
-</div>
-
-           <div className="min-h-screen flex flex-col font-sans bg-slate-50">
-        <div className="bg-white p-8 rounded-xl shadow-md max-w-3xl mx-auto my-8">
-          <h2 className="text-2xl font-semibold text-slate-800">
-            {sectionTitle} Section Instructions
-          </h2>
-
-          <div className="text-red-600 font-semibold text-lg mt-2">
-            Time to begin: {preTimer} sec
-          </div>
-
-          <div className="my-6 leading-relaxed text-slate-700">
-            <h3 className="text-xl font-semibold text-blue-800 mt-6">
-              Section Overview
-            </h3>
-            <p className="mt-2">
-              This section contains 7 questions to be completed in 15 minutes.
-            </p>
-
-            <h3 className="text-xl font-semibold text-blue-800 mt-6">
-              Question Types
-            </h3>
-            <ul className="list-disc pl-6 mt-3 space-y-2">
-              <li>
-                <strong>Arithmetic:</strong> Apply number properties, percentages, ratios, and rates to solve real-world math problems efficiently.
-              </li>
-              <li>
-                <strong>Algebra:</strong> Analyze and solve equations and inequalities, and translate verbal scenarios into algebraic expressions.
-              </li>
-            </ul>
-
-            <h3 className="text-xl font-semibold text-blue-800 mt-6">
-              Timer & Navigation
-            </h3>
-            <p className="mt-2">
-              The timer will start automatically after the countdown. You can
-              also click <b>Begin</b> to start immediately.
-            </p>
-          </div>
-
-          <button
-            onClick={startSection}
-            className="bg-blue-600 text-white font-semibold text-base py-3 px-6 rounded-md w-full max-w-xs mx-auto block mt-8 hover:bg-blue-800 transition-colors"
-          >
-            Begin {sectionTitle} <span><FontAwesomeIcon icon={faArrowRight} beatFade /></span>
-          </button>
+      <>
+        <div className="w-full bg-blue-600 text-white py-3 px-6 shadow-md text-center font-semibold text-lg">
+          Section {currentSectionIdx + 1} of {totalSections} — {sectionTitle}
         </div>
-      </div>
-     </>
+
+        <div className="min-h-screen flex flex-col font-sans bg-slate-50">
+          <div className="bg-white p-8 rounded-xl shadow-md max-w-3xl mx-auto my-8">
+            <h2 className="text-2xl font-semibold text-slate-800">
+              {sectionTitle} Section Instructions
+            </h2>
+            <div className="text-red-600 font-semibold text-lg mt-2">
+              Time to begin: {preTimer} sec
+            </div>
+            <div className="my-6 leading-relaxed text-slate-700">
+              <h3 className="text-xl font-semibold text-blue-800 mt-6">
+                Section Overview
+              </h3>
+              <p className="mt-2">
+                This section contains 7 questions to be completed in 15 minutes.
+              </p>
+
+              <h3 className="text-xl font-semibold text-blue-800 mt-6">
+                Question Types
+              </h3>
+              <ul className="list-disc pl-6 mt-3 space-y-2">
+                <li>
+                  <strong>Arithmetic:</strong> Apply number properties, percentages, ratios, and rates to solve real-world math problems efficiently.
+                </li>
+                <li>
+                  <strong>Algebra:</strong> Analyze and solve equations and inequalities, and translate verbal scenarios into algebraic expressions.
+                </li>
+              </ul>
+
+              <h3 className="text-xl font-semibold text-blue-800 mt-6">
+                Timer & Navigation
+              </h3>
+              <p className="mt-2">
+                The timer will start automatically after the countdown. You can
+                also click <b>Begin</b> to start immediately.
+              </p>
+            </div>
+
+            <button
+              onClick={startSection}
+              className="bg-blue-600 text-white font-semibold text-base py-3 px-6 rounded-md w-full max-w-xs mx-auto block mt-8 hover:bg-blue-800 transition-colors"
+            >
+              Begin {sectionTitle} <span><FontAwesomeIcon icon={faArrowRight} beatFade /></span>
+            </button>
+          </div>
+        </div>
+      </>
     );
   }
 
-  // ===========================
-  // 📌 Question Screen
-  // ===========================
   return (
     <MathJaxContext>
       <div className="bg-gray-100 min-h-screen flex flex-col pb-20">
@@ -300,7 +297,6 @@ const QuantSection = ({
                     onChange={() => handleSelect(idx)}
                     className="accent-blue-600 mt-1 mr-3"
                   />
-                  
                   <MathJax inline={false}>{opt}</MathJax>
                 </label>
               ))}
@@ -322,6 +318,13 @@ const QuantSection = ({
             {submitting ? "Submitting..." : "Next"}
           </button>
         </div>
+
+        {/* Toast Alert */}
+        {showToast && (
+          <div className="fixed bottom-24 right-8 bg-blue-500 text-white p-3 rounded-md shadow-md z-[200]">
+            Please select an option before proceeding
+          </div>
+        )}
       </div>
     </MathJaxContext>
   );

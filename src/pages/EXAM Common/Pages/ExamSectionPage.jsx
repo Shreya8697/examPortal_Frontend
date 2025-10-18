@@ -20,7 +20,7 @@ const AdaptiveExamPage = ({ testName }) => {
     if (currentSectionIdx + 1 < sectionsOrder.length) {
       setCurrentSectionIdx((idx) => idx + 1);
     } else {
-      alert("Exam finished! Go to profile to see results.");
+      // alert("Exam finished! Go to profile to see results.");
     }
   };
 
