@@ -201,48 +201,73 @@ if (question.id === 2) {
   // --------------------------
   // ID 4: TableAnalysis
   // --------------------------
-  if (question.id === 4) {
-    return (
-      <div>
-        {question.text && <p className="mb-2 font-semibold">{question.text}</p>}
-        <table className="table-auto border-collapse border border-gray-300 w-full mb-4">
+ if (question.id === 4) {
+  return (
+    <div className="space-y-4">
+      {/* Question Text */}
+      {question.text && (
+        <p className="font-semibold text-lg">{question.text}</p>
+      )}
+
+      {/* Instructions */}
+      {question.instructions && (
+        <div
+          className="bg-blue-50 border-l-4 border-blue-400 text-gray-800 p-3 rounded-md"
+          dangerouslySetInnerHTML={{ __html: question.instructions }}
+        />
+      )}
+
+      {/* Table */}
+      <div className="overflow-x-auto">
+        <table className="table-auto border-collapse border border-gray-300 w-full text-sm">
           <thead className="bg-gray-100">
             <tr>
               {question.tableData.headers.map((h, i) => (
-                <th key={i} className="border px-3 py-1">{h}</th>
+                <th key={i} className="border px-3 py-2 text-left font-semibold">
+                  {h}
+                </th>
               ))}
             </tr>
           </thead>
           <tbody>
             {question.tableData.rows.map((row, i) => (
-              <tr key={i}>
+              <tr
+                key={i}
+                className={i % 2 === 0 ? "bg-white" : "bg-gray-50"}
+              >
                 {row.map((cell, j) => (
-                  <td key={j} className="border px-3 py-1">{cell}</td>
+                  <td key={j} className="border px-3 py-2 text-gray-700">
+                    {cell}
+                  </td>
                 ))}
               </tr>
             ))}
           </tbody>
         </table>
-        {question.prompts?.map((p, idx) => (
-          <div key={idx} className="mb-3">
-            <p className="font-semibold mb-1">{p.statement}</p>
-            <select
-              value={getValue(idx)}
-              onChange={(e) => handleSelect(idx, parseInt(e.target.value))}
-              className="border rounded-md p-2 w-full"
-            >
-              <option value="">Select</option>
-              {p.options.map((opt, oIdx) => (
-                <option key={oIdx} value={oIdx}>
-                  {opt}
-                </option>
-              ))}
-            </select>
-          </div>
-        ))}
       </div>
-    );
-  }
+
+      {/* Prompts Section */}
+      {question.prompts?.map((p, idx) => (
+        <div key={idx} className="mb-3">
+          <p className="font-semibold mb-1">{p.statement}</p>
+          <select
+            value={getValue(idx)}
+            onChange={(e) => handleSelect(idx, parseInt(e.target.value))}
+            className="border rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+          >
+            <option value="">Select</option>
+            {p.options.map((opt, oIdx) => (
+              <option key={oIdx} value={oIdx}>
+                {opt}
+              </option>
+            ))}
+          </select>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 
   // --------------------------
   // ID 5 & 6: MultiSourceReasoning (Tabs)
@@ -310,51 +335,78 @@ if (question.id === 2) {
   // --------------------------
   // ID 7: MultiSourceReasoning (Options)
   // --------------------------
-  if (question.id === 7) {
-    return (
+  // --------------------------
+// ID 7: MultiSourceReasoning (Tabs + Radio Options)
+// --------------------------
+if (question.id === 7) {
+  const [activeTab, setActiveTab] = useState(Object.keys(question.tabs || {})[0] || "");
+
+  return (
     <div className="w-[100%] mx-auto mt-4 space-y-4">
-  {/* Question Text */}
-  {question.text && (
-    <p className="text-gray-800 text-base sm:text-lg font-semibold">
-      {question.text}
-    </p>
-  )}
+      {/* Question Text */}
+      {question.text && (
+        <p className="text-gray-800 text-base sm:text-lg font-semibold">
+          {question.text}
+        </p>
+      )}
 
-  {/* Instructions */}
-  {question.instructions && (
-    <p className="text-gray-700">{question.instructions}</p>
-  )}
+      {/* Tabs Section */}
+      <div className="flex gap-2 mb-4 flex-wrap">
+        {Object.keys(question.tabs || {}).map((tab) => (
+          <button
+            key={tab}
+            className={`px-3 py-1 rounded-md transition-all duration-200 ${
+              tab === activeTab
+                ? "bg-blue-600 text-white shadow-md"
+                : "bg-gray-200 hover:bg-gray-300"
+            }`}
+            onClick={() => setActiveTab(tab)}
+          >
+            {tab}
+          </button>
+        ))}
+      </div>
 
-  {/* Options as Radio Buttons */}
-  <div className="flex flex-col gap-4 mt-2">
-    {question.options?.map((opt, idx) => {
-      const isSelected = getValue(0) === idx;
-      return (
-        <label
-          key={idx}
-          className={`w-full rounded-lg p-3 cursor-pointer flex items-start gap-2 transition-all duration-200 border ${
-            isSelected
-              ? "bg-blue-100 border-blue-500 font-semibold text-blue-800"
-              : "hover:bg-gray-100 border-gray-300"
-          }`}
-        >
-          <input
-            type="radio"
-            name={`q-${question.id}`}
-            checked={isSelected}
-            onChange={() => handleSelect(0, idx)}
-            className="accent-blue-600 mt-1"
-          />
-          <MathJax inline={false}>{opt}</MathJax>
-        </label>
-      );
-    })}
-  </div>
-</div>
+      {/* Active Tab Content */}
+      <div
+        className="bg-gray-50 p-4 mb-4 border rounded-md text-sm leading-relaxed"
+        dangerouslySetInnerHTML={{ __html: question.tabs[activeTab] }}
+      />
 
+      {/* Instructions */}
+      {question.instructions && (
+        <p className="text-gray-700 font-medium">{question.instructions}</p>
+      )}
 
-    );
-  }
+      {/* Options as Radio Buttons */}
+      <div className="flex flex-col gap-4 mt-2">
+        {question.options?.map((opt, idx) => {
+          const isSelected = getValue(0) === idx;
+          return (
+            <label
+              key={idx}
+              className={`w-full rounded-lg p-3 cursor-pointer flex items-start gap-2 transition-all duration-200 border ${
+                isSelected
+                  ? "bg-blue-100 border-blue-500 font-semibold text-blue-800"
+                  : "hover:bg-gray-100 border-gray-300"
+              }`}
+            >
+              <input
+                type="radio"
+                name={`q-${question.id}`}
+                checked={isSelected}
+                onChange={() => handleSelect(0, idx)}
+                className="accent-blue-600 mt-1"
+              />
+              <MathJax inline={false}>{opt}</MathJax>
+            </label>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 
   return <div>Question ID {question.id} not designed yet.</div>;
 };

@@ -37,6 +37,7 @@ import Signup from "./pages/Signup";
 import ForgotPassword from "./pages/ForgotPassword";
 import Login from "./pages/login";
 import ResultPage from "./pages/user/ResultPage";
+import ReviewPage from "./pages/user/ReviewPage";
 
 function AppWrapper() {
   const location = useLocation();
@@ -119,9 +120,17 @@ function AppWrapper() {
 
         {/* ✅ New Results Page */}
         {/* ✅ Dynamic route for result details */}
+
+{/* ✅ New Results Page */}
 <Route
   path="/results/:examType/:testName/:attempt"
   element={<ProtectedRoute><ResultPage /></ProtectedRoute>}
+/>
+
+{/* ✅ New Review Page */}
+<Route
+  path="/review/:examType/:testName/:attempt/:sectionName"
+  element={<ProtectedRoute><ReviewPage /></ProtectedRoute>}
 />
 
         {/* User Pages */}

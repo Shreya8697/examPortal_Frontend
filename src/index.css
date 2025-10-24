@@ -23,12 +23,7 @@
   animation: fade-in 0.25s ease-out forwards;
 }
 /* ✅ Disable text selection globally */
-* {
-  user-select: none;          /* Prevent text selection */
-  -webkit-user-select: none;  /* For Safari */
-  -moz-user-select: none;     /* For Firefox */
-  -ms-user-select: none;      /* For older IE */
-}
+
 
 /* ✅ Remove blue highlight / typing line */
 *:focus {
