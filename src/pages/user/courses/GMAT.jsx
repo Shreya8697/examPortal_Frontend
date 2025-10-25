@@ -107,10 +107,10 @@ function GMAT() {
         </div>
 
         {/* Test Cards */}
-        <div className="flex flex-col sm:flex-row gap-6">
+        <div className="flex flex-col sm:flex-row gap-6 justify-center">
           {testCard("Mock Test 1", true)}
-          {testCard("Mock Test 2", false)}
-          {testCard("Mock Test 3", false)}
+          {/* {testCard("Mock Test 2", false)} */}
+          {/* {testCard("Mock Test 3", false)} */}
         </div>
 
         {/* Footer Note */}

@@ -31,14 +31,28 @@ const QuantSection = ({
 
   
   useEffect(() => {
-    const handleBeforeUnload = (e) => {
-      e.preventDefault();
-      e.returnValue =
-        "You are not allowed to refresh this page before starting the exam!";
-    };
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-  }, []);
+  const handleBeforeUnload = (e) => {
+    e.preventDefault();
+    e.returnValue =
+      "You are not allowed to refresh this page before starting the exam!";
+  };
+  window.addEventListener("beforeunload", handleBeforeUnload);
+
+  // Prevent back navigation
+  window.history.pushState(null, null, window.location.href); // push a dummy state
+  const handlePopState = () => {
+    // Re-push the state to prevent going back
+    window.history.pushState(null, null, window.location.href);
+    alert("You are not allowed to go back during the exam!");
+  };
+  window.addEventListener("popstate", handlePopState);
+
+  return () => {
+    window.removeEventListener("beforeunload", handleBeforeUnload);
+    window.removeEventListener("popstate", handlePopState);
+  };
+}, []);
+
 
   useEffect(() => {
     setSessionIdState(sessionId || null);

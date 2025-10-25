@@ -22,8 +22,23 @@
 .animate-fade-in {
   animation: fade-in 0.25s ease-out forwards;
 }
-/* ✅ Disable text selection globally */
+* {
+  user-select: none;             /* Disable text selection */
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
 
+/* Remove blue highlight / focus outline */
+*:focus {
+  outline: none !important;      /* Remove default focus outline */
+  box-shadow: none !important;   /* Remove focus shadow */
+}
+
+/* Prevent image dragging */
+img {
+  -webkit-user-drag: none;
+  user-drag: none;
+}
 
 /* ✅ Remove blue highlight / typing line */
 *:focus {

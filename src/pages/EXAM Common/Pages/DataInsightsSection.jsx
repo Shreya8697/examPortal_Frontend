@@ -33,16 +33,29 @@ const DataInsightsSection = ({
   const preTimerRef = useRef(null);
   
   const navigate = useNavigate();
-  
-  useEffect(() => {
-    const handleBeforeUnload = (e) => {
-      e.preventDefault();
-      e.returnValue =
-        "You are not allowed to refresh this page before starting the exam!";
-    };
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-  }, []);
+ useEffect(() => {
+  const handleBeforeUnload = (e) => {
+    e.preventDefault();
+    e.returnValue =
+      "You are not allowed to refresh this page before starting the exam!";
+  };
+  window.addEventListener("beforeunload", handleBeforeUnload);
+
+  // Prevent back navigation
+  window.history.pushState(null, null, window.location.href); // push a dummy state
+  const handlePopState = () => {
+    // Re-push the state to prevent going back
+    window.history.pushState(null, null, window.location.href);
+    alert("You are not allowed to go back during the exam!");
+  };
+  window.addEventListener("popstate", handlePopState);
+
+  return () => {
+    window.removeEventListener("beforeunload", handleBeforeUnload);
+    window.removeEventListener("popstate", handlePopState);
+  };
+}, []);
+
 
   const formatTime = (sec) => {
     const m = Math.floor(sec / 60);
@@ -184,41 +197,83 @@ const DataInsightsSection = ({
   };
 
   // Instruction Screen
-  if (showInstruction) {
-    return (
-      <>
-        <div className="w-full bg-blue-600 text-white py-3   shadow-md text-center font-semibold text-lg">
-          Section {currentSectionIdx + 1} of {totalSections} — {sectionTitle}
-        </div>
-        <div className="min-h-screen  flex-col font-sans bg-slate-50">
-          <div className="bg-white p-8 rounded-xl shadow-md max-w-3xl mx-auto my-8">
-            <h2 className="text-2xl font-semibold text-slate-800">{sectionTitle} Section Instructions</h2>
-            <div className="text-red-600 font-semibold text-lg mt-2">
-              Time to begin: {preTimer} sec
-            </div>
-            <div className="my-6 leading-relaxed text-slate-700">
-              <h3 className="text-xl font-semibold text-blue-800 mt-6">Section Overview</h3>
-              <p className="mt-2">This section contains data insights questions.</p>
-              <h3 className="text-xl font-semibold text-blue-800 mt-6">Question Types</h3>
-              <ul className="list-disc pl-6 mt-3 space-y-2">
-                <li>Graphics Interpretation</li>
-                <li>Two-Part Analysis</li>
-                <li>Data Sufficiency</li>
-                <li>Table Analysis</li>
-                <li>Multi-Source Reasoning</li>
-              </ul>
-            </div>
-            <button
-              onClick={startSection}
-              className="bg-blue-600 text-white font-semibold text-base py-3 px-6 rounded-md w-full max-w-xs mx-auto block mt-8 hover:bg-blue-800 transition-colors"
-            >
-              Begin {sectionTitle} <FontAwesomeIcon icon={faArrowRight} beatFade />
-            </button>
+if (showInstruction) {
+  return (
+    <>
+      <div className="w-full bg-blue-600 text-white py-3 shadow-md text-center font-semibold text-lg">
+        Section {currentSectionIdx + 1} of {totalSections} — {sectionTitle}
+      </div>
+
+      <div className="min-h-screen flex-col font-sans ">
+        <div className="bg-white p-8 rounded-xl shadow-md max-w-3xl mx-auto my-8 animate-fadeIn">
+          <h2 className="text-2xl font-semibold text-slate-900">
+            {sectionTitle} Section Instructions
+          </h2>
+
+          <div className="text-red-600 font-semibold text-lg mt-2">
+            Time to begin: {preTimer} sec
           </div>
+
+          <div className="my-6 leading-relaxed text-slate-800">
+            {/* Section Overview */}
+            <h3 className="text-xl font-semibold text-blue-800 mt-6">
+              Section Overview
+            </h3>
+            <p className="mt-2">
+              This section contains <strong>7 questions</strong> to be completed in <strong>15 minutes</strong>.
+            </p>
+
+            {/* Question Types */}
+            <h3 className="text-xl font-semibold text-blue-800 mt-6">
+              Question Types
+            </h3>
+            <ul className="list-disc pl-6 mt-3 space-y-2">
+              <li>
+                <strong>Table Analysis:</strong> Analyze data tables and answer questions
+              </li>
+              <li>
+                <strong>Graphics Interpretation:</strong> Interpret charts and graphs
+              </li>
+              <li>
+                <strong>Multi-Source Reasoning:</strong> Analyze information from multiple sources
+              </li>
+              <li>
+                <strong>Two-Part Analysis:</strong> Answer two related questions about data
+              </li>
+              <li>
+                <strong>Data Sufficiency:</strong> Determine if given data is sufficient to answer questions
+              </li>
+            </ul>
+
+            {/* Navigation */}
+            <h3 className="text-xl font-semibold text-blue-800 mt-6">
+              Navigation
+            </h3>
+            <p className="mt-2">
+              Use the <strong>Next</strong> button to move to the next question.
+              <br />
+              The calculator is provided here; you can use it.
+            </p>
+
+            {/* Timer */}
+            <h3 className="text-xl font-semibold text-blue-800 mt-6">Timer</h3>
+            <p className="mt-2">
+              The <strong>15-minute</strong> timer will start when you begin the test.
+            </p>
+          </div>
+
+          <button
+            onClick={startSection}
+            className="bg-blue-600 text-white font-semibold text-base py-3 px-6 rounded-md w-full max-w-xs mx-auto block mt-8 hover:bg-blue-800 transition-colors"
+          >
+            Begin {sectionTitle} <FontAwesomeIcon icon={faArrowRight} beatFade />
+          </button>
         </div>
-      </>
-    );
-  }
+      </div>
+    </>
+  );
+}
+  
 
   // Finish Screen
   if (finished) {
@@ -227,7 +282,7 @@ const DataInsightsSection = ({
         <div className="bg-white shadow-lg rounded-2xl p-10 max-w-xl w-full text-center border-t-4 border-blue-600">
           <h1 className="text-3xl font-bold text-blue-700 mb-3">Exam Completed!</h1>
           <p className="text-slate-700 text-lg mb-6">
-            You have successfully finished the GMAT Test.  
+            You have successfully finished the GMAT Test. 
             Your answers have been securely submitted.
           </p>
           
