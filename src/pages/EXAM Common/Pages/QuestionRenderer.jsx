@@ -20,10 +20,10 @@ const QuestionRenderer = ({ question, selected = {}, setSelected }) => {
   // --------------------------
   if (question.id === 1) {
     return (
-      <div className="flex flex-col xl:flex-row gap-7 bg-gray-100 rounded-lg p-4">
+      <div className="flex flex-col xl:flex-row gap-1 bg-gray-100 rounded-lg p-4">
         {/* LEFT SECTION */}
-        <div className="xl:w-1/2 bg-white p-4 rounded-lg shadow-md flex flex-col justify-between">
-          {question.passage && (
+        <div className="xl:w-1/2 bg-white p-5  shadow-md flex flex-col justify-between">
+         {question.passage && (
             <p className="mb-4 text-gray-800 leading-relaxed">{question.passage}</p>
           )}
           {question.imageLink?.length > 0 && (
@@ -41,7 +41,7 @@ const QuestionRenderer = ({ question, selected = {}, setSelected }) => {
         </div>
 
         {/* RIGHT SECTION */}
-        <div className="xl:w-1/2 bg-white p-4 rounded-lg shadow-md">
+        <div className="xl:w-1/2 bg-white p-5  shadow-md">
           {question.chartDescription && (
             <p className="mb-4 text-gray-800 leading-relaxed">{question.chartDescription}</p>
           )}
@@ -81,236 +81,315 @@ const QuestionRenderer = ({ question, selected = {}, setSelected }) => {
   // ID 2: TwoPartAnalysis
   // --------------------------
   if (question.id === 2) {
-    return (
-      <div className="space-y-4">
-        {question.passage && <p className="mb-2 text-gray-800">{question.passage}</p>}
-        <p className="font-semibold mb-4 text-gray-800">{question.text}</p>
+  return (
+    <div className="space-y-6 p-6 bg-gray-50 rounded-lg shadow-md border border-gray-200">
+      {question.passage && (
+        <p className="mb-4 text-gray-700 text-lg leading-relaxed">{question.passage}</p>
+      )}
+      <p className="font-bold mb-6 text-gray-900 text-xl">{question.text}</p>
 
-        <div className="overflow-x-auto flex justify-center">
-          <table className="w-[30%] border border-gray-300 border-collapse text-sm">
-            <thead>
-              <tr className="bg-gray-100">
-                {Object.keys(question.tableHeadings || {}).map((colKey, idx) => (
-                  <th
-                    key={idx}
-                    className="text-center px-4 py-2 border border-gray-300 font-semibold text-gray-800"
-                  >
-                    {question.tableHeadings[colKey]}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {question.options.map((opt, optIdx) => (
-                <tr key={optIdx}>
-                  {/* Left Column */}
-                  <td
-                    className={`border border-gray-300 text-center transition cursor-pointer ${
-                      getValue(0) === optIdx
-                        ? "bg-blue-300 font-semibold"
-                        : "bg-white hover:bg-gray-100"
-                    }`}
-                    onClick={() => handleSelect(0, optIdx)}
-                  >
-                    <div className="px-3 py-2">{opt}</div>
-                  </td>
-
-                  {/* Right Column */}
-                  <td
-                    className={`border text-center border-gray-300 transition cursor-pointer ${
-                      getValue(1) === optIdx
-                        ? "bg-blue-300 font-semibold"
-                        : "bg-white hover:bg-gray-100"
-                    }`}
-                    onClick={() => handleSelect(1, optIdx)}
-                  >
-                    <div className="px-3 py-2">{opt}</div>
-                  </td>
-                </tr>
+      <div className="overflow-x-auto flex justify-center">
+        <table className="w-full max-w-2xl border border-gray-300 border-collapse text-sm bg-white shadow-lg rounded-lg overflow-hidden">
+          <thead>
+            <tr className="bg-gradient-to-r from-blue-500 to-blue-600 text-white">
+              {Object.keys(question.tableHeadings || {}).map((colKey, idx) => (
+                <th
+                  key={idx}
+                  className="text-center px-6 py-4 border-r border-blue-400 font-bold text-gray-100 uppercase tracking-wide"
+                >
+                  {question.tableHeadings[colKey]}
+                </th>
               ))}
-            </tbody>
-          </table>
-        </div>
+            </tr>
+          </thead>
+          <tbody>
+            {question.options.map((opt, optIdx) => (
+              <tr key={optIdx} className="hover:bg-gray-50 transition-colors duration-200 border-b border-gray-200">
+                {/* Left Column */}
+                <td
+                  className={`border-r border-gray-300 text-center transition-all duration-200 cursor-pointer ${
+                    getValue(0) === optIdx
+                      ? "bg-green-100 border-green-400 shadow-inner font-semibold text-green-800"
+                      : "bg-white hover:bg-blue-50 hover:shadow-sm"
+                  }`}
+                  onClick={() => handleSelect(0, optIdx)}
+                >
+                  <div className="px-4 py-3 flex items-center justify-center space-x-2">
+                    {getValue(0) === optIdx && (
+                      <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                    )}
+                    <span>{opt}</span>
+                  </div>
+                </td>
+
+                {/* Right Column */}
+                <td
+                  className={`text-center transition-all duration-200 cursor-pointer ${
+                    getValue(1) === optIdx
+                      ? "bg-green-100 border-green-400 shadow-inner font-semibold text-green-800"
+                      : "bg-white hover:bg-blue-50 hover:shadow-sm"
+                  }`}
+                  onClick={() => handleSelect(1, optIdx)}
+                >
+                  <div className="px-4 py-3 flex items-center justify-center space-x-2">
+                    {getValue(1) === optIdx && (
+                      <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                    )}
+                    <span>{opt}</span>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
-    );
-  }
+    </div>
+  );
+}
 
   // --------------------------
   // ID 3: DataSufficiency
   // --------------------------
-  if (question.id === 3) {
-    return (
-      <div className="w-full mx-auto mt-4 space-y-4">
-        {/* Question Text */}
-        {question.text && (
-          <p className="text-gray-800 text-base sm:text-lg">{question.text}</p>
-        )}
+ if (question.id === 3) {
+  return (
+    <div className="w-full max-w-3xl mx-auto mt-6 px-3 sm:px-6 py-5 bg-white rounded-2xl shadow-md border border-gray-200">
+      {/* Question Text */}
+      {question.text && (
+        <p className="text-gray-900 text-base sm:text-lg md:text-xl font-semibold leading-relaxed mb-4">
+          {question.text}
+        </p>
+      )}
 
-        {/* Instructions */}
-        {question.instructions?.map((ins, idx) => (
-          <p key={idx} className="font-semibold text-gray-700">
-            <span className="font-semibold">({idx + 1}). </span>
-            {ins}
-          </p>
-        ))}
+      {/* Instructions */}
+      {question.instructions?.map((ins, idx) => (
+        <div
+          key={idx}
+          className="text-gray-800 text-sm sm:text-base bg-gray-50 p-3 sm:p-4 rounded-xl border border-gray-200 mb-3"
+        >
+          <span className="font-bold text-blue-600 mr-1">({idx + 1}).</span>
+          {ins}
+        </div>
+      ))}
 
-        {/* Options */}
-        <div className="flex flex-col gap-4">
-          {question.options.map((opt, idx) => {
-            const isSelected = getValue(0) === idx;
-            return (
-              <label
-                key={idx}
-                className={`w-full rounded-lg p-3 cursor-pointer flex items-start gap-2 transition-all duration-200 border ${
+      {/* Options */}
+      <div className="flex flex-col gap-3 sm:gap-4 mt-4">
+        {question.options.map((opt, idx) => {
+          const isSelected = getValue(0) === idx;
+          return (
+            <label
+              key={idx}
+              className={`flex items-start gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 text-sm sm:text-base
+                ${
                   isSelected
-                    ? "bg-blue-100 border-blue-500 font-semibold text-blue-800"
-                    : "hover:bg-gray-100 border-gray-300"
+                    ? "bg-green-50 border-green-500 text-green-900 font-semibold shadow-sm"
+                    : "bg-white border-gray-300 hover:bg-blue-50 hover:border-blue-400"
+                }`}
+            >
+              <input
+                type="radio"
+                name={`q-${question.id}`}
+                checked={isSelected}
+                onChange={() => handleSelect(0, idx)}
+                className="accent-green-600 mt-1 w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0"
+              />
+              <div className="flex-1 leading-snug sm:leading-normal text-gray-900">
+                <MathJax inline={false}>{opt}</MathJax>
+              </div>
+            </label>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+
+ // --------------------------
+// ID 4: TableAnalysis
+// --------------------------
+if (question.id === 4) {
+  return (
+    <div className="w-full max-w-5xl mx-auto mt-6 px-3 sm:px-6 py-5 bg-white rounded-2xl shadow-md border border-gray-200">
+      {/* Question Text */}
+      {question.text && (
+        <p className="text-gray-900 font-semibold text-base sm:text-lg md:text-xl leading-relaxed mb-4">
+          {question.text}
+        </p>
+      )}
+
+      {/* Instructions */}
+      {question.instructions && (
+        <div
+          className="bg-blue-50 border-l-4 border-blue-500 text-gray-800 p-3 sm:p-4 rounded-xl shadow-sm text-sm sm:text-base"
+          dangerouslySetInnerHTML={{ __html: question.instructions }}
+        />
+      )}
+
+      {/* Table Section */}
+      <div className="overflow-x-auto mt-5 rounded-xl border border-gray-200 shadow-sm">
+        <table className="w-full border-collapse text-sm sm:text-base bg-white">
+          <thead className="bg-gradient-to-r from-blue-500 to-blue-600 text-white">
+            <tr>
+              {question.tableData.headers.map((h, i) => (
+                <th
+                  key={i}
+                  className="px-3 sm:px-4 py-2 sm:py-3 text-left font-semibold uppercase tracking-wide border-r border-blue-400 last:border-r-0"
+                >
+                  {h}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {question.tableData.rows.map((row, i) => (
+              <tr
+                key={i}
+                className={`transition duration-200 ${
+                  i % 2 === 0
+                    ? "bg-white hover:bg-gray-50"
+                    : "bg-gray-50 hover:bg-gray-100"
                 }`}
               >
-                <input
-                  type="radio"
-                  name={`q-${question.id}`}
-                  checked={isSelected}
-                  onChange={() => handleSelect(0, idx)}
-                  className="accent-blue-600 mt-1"
-                />
-                <MathJax inline={false}>{opt}</MathJax>
-              </label>
-            );
-          })}
-        </div>
-      </div>
-    );
-  }
-
-  // --------------------------
-  // ID 4: TableAnalysis
-  // --------------------------
-  if (question.id === 4) {
-    return (
-      <div className="space-y-4">
-        {/* Question Text */}
-        {question.text && (
-          <p className="font-semibold text-lg text-gray-800">{question.text}</p>
-        )}
-
-        {/* Instructions */}
-        {question.instructions && (
-          <div
-            className="bg-blue-50 border-l-4 border-blue-400 text-gray-800 p-3 rounded-md"
-            dangerouslySetInnerHTML={{ __html: question.instructions }}
-          />
-        )}
-
-        {/* Table */}
-        <div className="overflow-x-auto">
-          <table className="table-auto border-collapse border border-gray-300 w-full text-sm">
-            <thead className="bg-gray-100">
-              <tr>
-                {question.tableData.headers.map((h, i) => (
-                  <th key={i} className="border px-3 py-2 text-left font-semibold text-gray-800">
-                    {h}
-                  </th>
+                {row.map((cell, j) => (
+                  <td
+                    key={j}
+                    className="px-3 sm:px-4 py-2 sm:py-3 text-gray-800 border-t border-gray-200"
+                  >
+                    {cell}
+                  </td>
                 ))}
               </tr>
-            </thead>
-            <tbody>
-              {question.tableData.rows.map((row, i) => (
-                <tr
-                  key={i}
-                  className={i % 2 === 0 ? "bg-white" : "bg-gray-50"}
-                >
-                  {row.map((cell, j) => (
-                    <td key={j} className="border px-3 py-2 text-gray-700">
-                      {cell}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
-        {/* Prompts Section */}
+      {/* Prompts Section */}
+      <div className="mt-6 space-y-5">
         {question.prompts?.map((p, idx) => (
-          <div key={idx} className="mb-3">
-            <p className="font-semibold mb-2 text-gray-800">{p.statement}</p>
-            <div className="flex flex-wrap gap-2">
-              {p.options.map((opt, oIdx) => (
-                <button
-                  key={oIdx}
-                  onClick={() => handleSelect(idx, oIdx)}
-                  className={`px-3 py-1 rounded-md border transition-all duration-200 ${
-                    getValue(idx) === oIdx
-                      ? "bg-blue-500 text-white border-blue-500"
-                      : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
-                  }`}
-                >
-                  {opt}
-                </button>
-              ))}
+          <div
+            key={idx}
+            className="p-4 sm:p-5 bg-gray-50 rounded-xl border border-gray-200 shadow-sm"
+          >
+            <p className="font-semibold text-gray-900 text-base sm:text-lg mb-3 leading-snug">
+              {p.statement}
+            </p>
+            <div className="flex flex-wrap gap-3 sm:gap-4">
+              {p.options.map((opt, oIdx) => {
+                const selected = getValue(idx) === oIdx;
+                return (
+                  <button
+                    key={oIdx}
+                    onClick={() => handleSelect(idx, oIdx)}
+                    className={`px-3 sm:px-5 py-2 sm:py-2.5 rounded-lg border-2 text-sm sm:text-base font-medium transition-all duration-200 ${
+                      selected
+                        ? "bg-green-500 text-white border-green-500 shadow-md"
+                        : "bg-white text-gray-700 border-gray-300 hover:bg-blue-50 hover:border-blue-400 hover:shadow-sm"
+                    }`}
+                  >
+                    {opt}
+                  </button>
+                );
+              })}
             </div>
           </div>
         ))}
       </div>
-    );
-  }
+    </div>
+  );
+}
 
   // --------------------------
   // ID 5 & 6: MultiSourceReasoning (Tabs)
   // --------------------------
   if (question.id === 5 || question.id === 6) {
-    const [activeTab, setActiveTab] = useState(Object.keys(question.tabs || {})[0] || "");
+  const [activeTab, setActiveTab] = useState(Object.keys(question.tabs || {})[0] || "");
 
-    return (
-      <div className="space-y-4">
-        {question.text && <p className="mb-2 font-semibold text-gray-800">{question.text}</p>}
+  return (
+    <div className="w-full max-w-6xl mx-auto mt-6 p-4 sm:p-6 bg-white rounded-2xl shadow-md border border-gray-200 space-y-6">
+      {/* Question Text */}
+      {question.text && (
+        <p className="text-gray-900 font-semibold text-base sm:text-lg md:text-xl leading-relaxed">
+          {question.text}
+        </p>
+      )}
 
-        <div className="flex gap-2 mb-4 flex-wrap">
-          {Object.keys(question.tabs || {}).map((tab) => (
-            <button
-              key={tab}
-              className={`px-3 py-1 rounded-md transition-all duration-200 ${
-                tab === activeTab
-                  ? "bg-blue-600 text-white shadow-md"
-                  : "bg-gray-200 hover:bg-gray-300"
-              }`}
-              onClick={() => setActiveTab(tab)}
-            >
-              {tab}
-            </button>
-          ))}
-        </div>
+      {/* Tabs Section */}
+      <div className="flex flex-wrap gap-2 sm:gap-3">
+        {Object.keys(question.tabs || {}).map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            className={`px-4 py-2 sm:px-5 sm:py-2.5 rounded-lg font-medium text-sm sm:text-base transition-all duration-200 shadow-sm ${
+              tab === activeTab
+                ? "bg-blue-600 text-white shadow-md border border-blue-600"
+                : "bg-gray-100 text-gray-800 border border-gray-200 hover:bg-blue-50 hover:text-blue-600"
+            }`}
+          >
+            {tab}
+          </button>
+        ))}
+      </div>
 
-        <div
-          className="bg-gray-50 p-4 mb-4 border rounded-md text-sm leading-relaxed"
-          dangerouslySetInnerHTML={{ __html: question.tabs[activeTab] }}
-        />
+      {/* Tab Content */}
+      <div
+        className="bg-gray-50 border border-gray-200 rounded-xl p-4 sm:p-5 text-gray-800 leading-relaxed shadow-sm text-sm sm:text-base"
+        dangerouslySetInnerHTML={{ __html: question.tabs[activeTab] }}
+      />
 
-        {question.prompts?.map((p, idx) =>
-          p.rows ? (
-            <div key={idx} className="mb-4">
-              <p className="font-semibold mb-2 text-gray-800">{p.statement}</p>
-              <table className="table-auto border-collapse border border-gray-300 w-full">
+      {/* Prompts Section */}
+      {question.prompts?.map((p, idx) =>
+        p.rows ? (
+          <div
+            key={idx}
+            className="bg-gray-50 rounded-xl border border-gray-200 p-4 sm:p-5 shadow-sm"
+          >
+            {/* Prompt Title */}
+            <p className="font-semibold text-gray-900 mb-3 text-base sm:text-lg">
+              {p.statement}
+            </p>
+
+            {/* Table Section */}
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse text-sm sm:text-base rounded-lg overflow-hidden">
                 <tbody>
                   {p.rows.map((row, rIdx) => (
-                    <tr key={rIdx}>
-                      <td className="border px-2 py-1 text-gray-700">{row.statement}</td>
-                      <td className="border px-2 py-1">
-                        <div className="flex flex-wrap gap-2">
-                          {row.options.map((opt, oIdx) => (
-                            <button
-                              key={oIdx}
-                              onClick={() => handleSelect(rIdx, oIdx)}
-                              className={`px-3 py-1 rounded-md border transition-all duration-200 ${
-                                getValue(rIdx) === oIdx
-                                  ? "bg-blue-500 text-white border-blue-500"
-                                  : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
-                              }`}
-                            >
-                              {opt}
-                            </button>
-                          ))}
+                    <tr
+                      key={rIdx}
+                      className={`transition duration-200 ${
+                        rIdx % 2 === 0
+                          ? "bg-white hover:bg-gray-50"
+                          : "bg-gray-50 hover:bg-gray-100"
+                      }`}
+                    >
+                      {/* Left Column */}
+                      <td className="border border-gray-200 px-3 sm:px-4 py-2 sm:py-3 font-medium text-gray-800 w-1/2">
+                        {row.statement}
+                      </td>
+
+                      {/* Options Column */}
+                      <td className="border border-gray-200 px-3 sm:px-4 py-2 sm:py-3">
+                        <div className="flex flex-wrap gap-2 sm:gap-3">
+                          {row.options.map((opt, oIdx) => {
+                            const selected = getValue(rIdx) === oIdx;
+                            return (
+                              <button
+                                key={oIdx}
+                                onClick={() => handleSelect(rIdx, oIdx)}
+                                className={`px-3 sm:px-5 py-1.5 sm:py-2 rounded-lg border-2 text-sm sm:text-base font-medium transition-all duration-200 ${
+                                  selected
+                                    ? "bg-blue-600 text-white border-blue-600 shadow-md"
+                                    : "bg-white text-gray-700 border-gray-300 hover:bg-blue-50 hover:border-blue-400 hover:text-blue-700"
+                                }`}
+                              >
+                                {opt}
+                              </button>
+                            );
+                          })}
                         </div>
                       </td>
                     </tr>
@@ -318,11 +397,12 @@ const QuestionRenderer = ({ question, selected = {}, setSelected }) => {
                 </tbody>
               </table>
             </div>
-          ) : null
-        )}
-      </div>
-    );
-  }
+          </div>
+        ) : null
+      )}
+    </div>
+  );
+}
 
   // --------------------------
   // ID 7: MultiSourceReasoning (Tabs + Radio Options)

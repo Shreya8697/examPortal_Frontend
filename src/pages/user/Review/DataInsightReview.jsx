@@ -77,6 +77,7 @@ export default function DataInsightReview({ section }) {
       // GraphicsInterpretation: Render prompts as drop-down selects
       return (
         <>
+          {q.status === null && <div className="text-end text-red-600 font-semibold mb-4">Unattempt</div>}
           {renderPassage()}
           {renderImages()}
           {renderQuestionText()}
@@ -129,6 +130,7 @@ export default function DataInsightReview({ section }) {
       // TwoPartAnalysis
       return (
         <>
+          {q.status === null && <div className="text-end text-red-600 font-semibold mb-4">Unattempt</div>}
           {renderPassage()}
           {renderQuestionText()}
           <div className="mb-6 flex gap-8">
@@ -171,6 +173,7 @@ export default function DataInsightReview({ section }) {
       // DataSufficiency
       return (
         <>
+          {q.status === null && <div className="text-end text-red-600 font-semibold mb-4">Unattempt</div>}
           {renderQuestionText()}
           <div className="mb-4 text-gray-700">
             {q.instructions.map((inst, idx) => (
@@ -219,6 +222,7 @@ export default function DataInsightReview({ section }) {
       // TableAnalysis
       return (
         <>
+          {q.status === null && <div className="text-end text-red-600 font-semibold mb-4">Unattempt</div>}
           {renderQuestionText()}
           <div className="mb-4 text-gray-700">
             <MathJax>
@@ -284,67 +288,102 @@ export default function DataInsightReview({ section }) {
         </>
       );
     } else if ([5, 6].includes(q.id)) {
-      // MultiSourceReasoning id 5 and 6
-      return (
-        <>
-          {renderQuestionText()}
-          <div className="mb-6">
-            <div className="flex border-b border-gray-200">
-              {Object.keys(q.tabs).map((tabName) => (
-                <button key={tabName} className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-indigo-600 border-b-2 border-transparent hover:border-indigo-600">
-                  {tabName}
-                </button>
-              ))}
+  // MultiSourceReasoning (ID 5 and 6)
+  return (
+    <>
+      {/* Attempt status */}
+      {q.status === null && (
+        <div className="text-end text-red-600 font-semibold mb-4">Unattempted</div>
+      )}
+
+      {/* Question text */}
+      {renderQuestionText()}
+
+      {/* Tabs Section */}
+      <div className="mb-6">
+        <div className="flex border-b border-gray-200 flex-wrap">
+          {Object.keys(q.tabs).map((tabName) => (
+            <div
+              key={tabName}
+              className="px-4 py-2 text-sm font-semibold text-indigo-700 bg-indigo-50 rounded-t-md border-x border-t border-gray-200 mr-1 mt-1"
+            >
+              {tabName}
             </div>
-            <div className="mt-4">
-              {Object.entries(q.tabs).map(([tabName, content]) => (
-                <div key={tabName} className="mb-4">
-                  <h4 className="font-bold text-indigo-900">{tabName}</h4>
-                  <MathJax>
-                    <div dangerouslySetInnerHTML={{ __html: content }} />
-                  </MathJax>
-                </div>
-              ))}
+          ))}
+        </div>
+
+        <div className="mt-4 space-y-4">
+          {Object.entries(q.tabs).map(([tabName, content]) => (
+            <div key={tabName} className="p-4 border rounded-lg shadow-sm bg-gray-50">
+              <h4 className="font-bold text-indigo-900 mb-2">{tabName}</h4>
+              <MathJax>
+                <div dangerouslySetInnerHTML={{ __html: content }} />
+              </MathJax>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Prompts Table */}
+      <div className="space-y-6">
+        {q.prompts.map((p, idx) => (
+          <div key={idx} className="p-4 border rounded-lg shadow-sm bg-white">
+            <div className="text-gray-800 font-semibold mb-3">
+              <MathJax>
+                <div dangerouslySetInnerHTML={{ __html: p.statement }} />
+              </MathJax>
+            </div>
+
+            {/* Table of rows */}
+            <div className="space-y-3">
+              {p.rows.map((row, rowIdx) => {
+                const correctIndex = row.options.indexOf(row.correctAnswer);
+                const rowSelected = q.selected?.[rowIdx]; // From API array
+                return (
+                  <div
+                    key={rowIdx}
+                    className="flex flex-col sm:flex-row justify-between sm:items-center gap-2 border-b pb-2"
+                  >
+                    <span className="text-gray-700">{row.statement}</span>
+                    <div className="flex gap-2">
+                      {row.options.map((opt, optIdx) => {
+                        let className =
+                          "px-3 py-1 rounded border text-sm font-medium";
+                        if (optIdx === correctIndex && optIdx === rowSelected)
+                          className +=
+                            " border-green-600 bg-green-50 text-green-800";
+                        else if (optIdx === correctIndex)
+                          className +=
+                            " border-green-500 bg-green-50 text-green-700";
+                        else if (optIdx === rowSelected)
+                          className +=
+                            " border-red-500 bg-red-50 text-red-700";
+                        else className += " border-gray-200 text-gray-600";
+                        return (
+                          <button key={optIdx} className={className} disabled>
+                            {opt}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
-          <div className="space-y-4">
-            {q.prompts.map((p, idx) => (
-              <div key={idx} className="p-4 border rounded-lg shadow-sm bg-gray-50">
-                <div className="text-gray-700 font-medium mb-2">
-                  <MathJax>
-                    <div dangerouslySetInnerHTML={{ __html: p.statement }} />
-                  </MathJax>
-                </div>
-                <div className="space-y-2">
-                  {p.rows.map((row, rowIdx) => {
-                    const correctIndex = row.options.indexOf(row.correctAnswer);
-                    const rowSelected = q.selected?.[rowIdx]; // Adjusted for flat selected array
-                    return (
-                      <div key={rowIdx} className="flex justify-between items-center">
-                        <span className="text-gray-700">{row.statement}</span>
-                        <div className="flex gap-2">
-                          {row.options.map((opt, optIdx) => {
-                            let className = "px-3 py-1 rounded border";
-                            if (optIdx === correctIndex && optIdx === rowSelected) className += " border-green-500 bg-green-50";
-                            else if (optIdx === correctIndex) className += " border-green-500 bg-green-50";
-                            else if (optIdx === rowSelected) className += " border-red-500 bg-red-50";
-                            else className += " border-gray-200";
-                            return <button key={optIdx} className={className}>{opt}</button>;
-                          })}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            ))}
-          </div>
-        </>
-      );
-    } else if (q.id === 7) {
+        ))}
+      </div>
+
+      {/* Explanation */}
+      {/* {renderExplanation()} */}
+    </>
+  );
+}
+ else if (q.id === 7) {
       // MultiSourceReasoning id 7
       return (
         <>
+          {q.status === null && <div className="text-end text-red-600 font-semibold mb-4">Unattempt</div>}
           <div className="mb-6">
             <div className="flex border-b border-gray-200">
               {Object.keys(q.tabs).map((tabName) => (
@@ -417,6 +456,8 @@ export default function DataInsightReview({ section }) {
         {renderQuestionContent()}
         {renderExplanation()}
       </div>
+
+      
 
       <div className="fixed bottom-0 left-0 right-0 bg-white py-4 shadow-[0_-4px_20px_rgba(0,0,0,0.15)] flex justify-center gap-4 border-t border-slate-300">
         <button

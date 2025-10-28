@@ -21,6 +21,7 @@
     "better-react-mathjax": "^2.3.0",
     "dispatcher": "^0.0.2",
     "dompurify": "^3.3.0",
+    "firebase": "^12.4.0",
     "fontawesome": "^5.6.3",
     "html2canvas": "^1.4.1",
     "js-cookie": "^3.0.5",

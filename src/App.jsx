@@ -51,6 +51,7 @@ function AppWrapper() {
     const storedUser = JSON.parse(localStorage.getItem("user"));
     if (storedUser) setUser(storedUser);
   }, []);
+  
 
   const handleLogout = () => {
     localStorage.removeItem("user");

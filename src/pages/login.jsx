@@ -3,6 +3,9 @@ import axios from "axios";
 import { useDispatch } from "react-redux";
 import { saveUserdetail } from "../Redux/loginSlice";
 
+import { signInWithPopup } from "firebase/auth";
+import { auth, googleProvider } from "../fireBase";
+
 function Login({ onClose, onLoginSuccess, onSwitchToSignup, onSwitchToForgotPassword }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -11,6 +14,7 @@ function Login({ onClose, onLoginSuccess, onSwitchToSignup, onSwitchToForgotPass
   const [message, setMessage] = useState({ type: "", text: "" });
   const dispatch = useDispatch();
 
+  /* -------------------- Manual Email Login -------------------- */
   const handleLogin = async (e) => {
     e.preventDefault();
     if (!email || !password) {
@@ -22,22 +26,13 @@ function Login({ onClose, onLoginSuccess, onSwitchToSignup, onSwitchToForgotPass
     setMessage({ type: "", text: "" });
 
     try {
-      const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/website/auth/manual/login`, {
-        email,
-        password,
-      });
+      const res = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/website/auth/manual/login`,
+        { email, password }
+      );
 
       if (res.data.status === 1) {
-        setSecureLoading(true);
-        // Show secure loading for 2 seconds before success
-        setTimeout(() => {
-          setSecureLoading(false);
-          setMessage({ type: "success", text: "Login successful! Redirecting..." });
-          const user = res.data.user;
-          dispatch(saveUserdetail({ user }));
-          if (onLoginSuccess) onLoginSuccess(user);
-          setTimeout(() => onClose?.(), 1000);
-        }, 2000);
+        handleLoginSuccess(res.data.user);
       } else {
         setMessage({ type: "error", text: res.data.message || "Invalid credentials" });
       }
@@ -49,6 +44,50 @@ function Login({ onClose, onLoginSuccess, onSwitchToSignup, onSwitchToForgotPass
     } finally {
       setIsLoading(false);
     }
+  };
+
+  /* -------------------- Google Login -------------------- */
+  const handleGoogleLogin = async () => {
+    try {
+      setSecureLoading(true);
+      setMessage({ type: "", text: "" });
+
+      const result = await signInWithPopup(auth, googleProvider);
+      const user = result.user;
+
+      // Send Google login token/email to backend
+      const token = await user.getIdToken();
+      const res = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/website/auth/google/login`,
+        { email: user.email, token }
+      );
+
+      if (res.data.status === 1) {
+        handleLoginSuccess(res.data.user);
+      } else {
+        setMessage({ type: "error", text: res.data.message || "Google login failed" });
+        setSecureLoading(false);
+      }
+    } catch (err) {
+      console.error("Google Login Error:", err);
+      setMessage({
+        type: "error",
+        text: "Google sign-in failed. Please try again.",
+      });
+      setSecureLoading(false);
+    }
+  };
+
+  /* -------------------- Shared Success Handler -------------------- */
+  const handleLoginSuccess = (user) => {
+    setSecureLoading(true);
+    setTimeout(() => {
+      setSecureLoading(false);
+      setMessage({ type: "success", text: "Login successful! Redirecting..." });
+      dispatch(saveUserdetail({ user }));
+      if (onLoginSuccess) onLoginSuccess(user);
+      setTimeout(() => onClose?.(), 1000);
+    }, 1500);
   };
 
   return (
@@ -79,7 +118,7 @@ function Login({ onClose, onLoginSuccess, onSwitchToSignup, onSwitchToForgotPass
         )}
 
         <div className="p-8">
-          {/* Error / Success Popup */}
+          {/* Message */}
           {message.text && (
             <div
               className={`mb-4 p-3 rounded-lg text-sm font-medium animate-fade-in ${
@@ -94,6 +133,7 @@ function Login({ onClose, onLoginSuccess, onSwitchToSignup, onSwitchToForgotPass
 
           {/* Google Login */}
           <button
+            onClick={handleGoogleLogin}
             className="w-full flex items-center justify-center gap-3 bg-white border border-gray-300 text-gray-700 font-medium py-3 px-4 rounded-lg hover:bg-gray-50 transition shadow-sm mb-6"
             type="button"
           >
@@ -121,18 +161,13 @@ function Login({ onClose, onLoginSuccess, onSwitchToSignup, onSwitchToForgotPass
           {/* Divider */}
           <div className="relative flex items-center justify-center mb-6">
             <div className="w-full h-px bg-gray-300"></div>
-            <span className="absolute bg-white px-3 text-sm text-gray-500">
-              Or with email
-            </span>
+            <span className="absolute bg-white px-3 text-sm text-gray-500">Or with email</span>
           </div>
 
-          {/* Manual Email Login */}
+          {/* Manual Login Form */}
           <form onSubmit={handleLogin}>
             <div className="mb-5">
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
                 Email Address
               </label>
               <input
@@ -147,10 +182,7 @@ function Login({ onClose, onLoginSuccess, onSwitchToSignup, onSwitchToForgotPass
 
             <div className="mb-5">
               <div className="flex items-center justify-between mb-1">
-                <label
-                  htmlFor="password"
-                  className="block text-sm font-medium text-gray-700"
-                >
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                   Password
                 </label>
                 <button
@@ -207,4 +239,3 @@ function Login({ onClose, onLoginSuccess, onSwitchToSignup, onSwitchToForgotPass
 }
 
 export default Login;
-  
