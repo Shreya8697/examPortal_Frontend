@@ -407,24 +407,24 @@ if (question.id === 4) {
   // --------------------------
   // ID 7: MultiSourceReasoning (Tabs + Radio Options)
   // --------------------------
-  if (question.id === 7) {
+ if (question.id === 7) {
     const [activeTab, setActiveTab] = useState(Object.keys(question.tabs || {})[0] || "");
 
     return (
-      <div className="w-full mx-auto mt-4 space-y-4">
+      <div className="w-full max-w-4xl mx-auto mt-4 px-4 sm:px-6 lg:px-8 space-y-4">
         {/* Question Text */}
         {question.text && (
-          <p className="text-gray-800 text-base sm:text-lg font-semibold">
+          <p className="text-gray-800 text-base sm:text-lg lg:text-xl font-semibold leading-relaxed">
             {question.text}
           </p>
         )}
 
         {/* Tabs Section */}
-        <div className="flex gap-2 mb-4 flex-wrap">
+        <div className="flex gap-2 mb-4 flex-wrap justify-start sm:justify-center">
           {Object.keys(question.tabs || {}).map((tab) => (
             <button
               key={tab}
-              className={`px-3 py-1 rounded-md transition-all duration-200 ${
+              className={`px-2 py-1 sm:px-3 sm:py-2 text-sm sm:text-base rounded-md transition-all duration-200 min-w-0 flex-shrink-0 ${
                 tab === activeTab
                   ? "bg-blue-600 text-white shadow-md"
                   : "bg-gray-200 hover:bg-gray-300"
@@ -438,23 +438,25 @@ if (question.id === 4) {
 
         {/* Active Tab Content */}
         <div
-          className="bg-gray-50 p-4 mb-4 border rounded-md text-sm leading-relaxed"
+          className="bg-gray-50 p-3 sm:p-4 lg:p-6 mb-4 border rounded-md text-sm sm:text-base leading-relaxed overflow-x-auto min-h-[300px] sm:min-h-[400px] lg:min-h-[500px]"
           dangerouslySetInnerHTML={{ __html: question.tabs[activeTab] }}
         />
 
         {/* Instructions */}
         {question.instructions && (
-          <p className="text-gray-700 font-medium">{question.instructions}</p>
+          <p className="text-gray-700 text-sm sm:text-base lg:text-lg font-medium leading-relaxed">
+            {question.instructions}
+          </p>
         )}
 
         {/* Options as Radio Buttons */}
-        <div className="flex flex-col gap-4 mt-2">
+        <div className="flex flex-col gap-3 sm:gap-4 mt-2">
           {question.options?.map((opt, idx) => {
             const isSelected = getValue(0) === idx;
             return (
               <label
                 key={idx}
-                className={`w-full rounded-lg p-3 cursor-pointer flex items-start gap-2 transition-all duration-200 border ${
+                className={`w-full rounded-lg p-2 sm:p-3 lg:p-4 cursor-pointer flex items-start gap-2 sm:gap-3 transition-all duration-200 border ${
                   isSelected
                     ? "bg-blue-100 border-blue-500 font-semibold text-blue-800"
                     : "hover:bg-gray-100 border-gray-300"
@@ -465,9 +467,11 @@ if (question.id === 4) {
                   name={`q-${question.id}`}
                   checked={isSelected}
                   onChange={() => handleSelect(0, idx)}
-                  className="accent-blue-600 mt-1"
+                  className="accent-blue-600 mt-1 w-4 h-4 sm:w-5 sm:h-5"
                 />
-                <MathJax inline={false}>{opt}</MathJax>
+                <div className="flex-1 text-sm sm:text-base lg:text-lg">
+                  <MathJax inline={false}>{opt}</MathJax>
+                </div>
               </label>
             );
           })}
