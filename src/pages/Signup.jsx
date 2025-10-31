@@ -15,6 +15,7 @@ function Signup({ onClose, onSwitchToLogin }) {
   });
 
   const BaseUrl = import.meta.env.VITE_BASE_URL;
+  // console.log("BaseUrl:", BaseUrl);
 
   const [otpSent, setOtpSent] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -41,7 +42,7 @@ function Signup({ onClose, onSwitchToLogin }) {
       };
 
       // Try to register only. If already registered -> show message (do NOT auto-login).
-      const res = await axios.post(`${BaseUrl}/website/auth/google-register`, payload);
+      const res = await axios.post(`http://192.168.0.109:8000/website/auth/google-register`, payload);
 
       // On successful registration, store user (if server returns user) and notify.
       if (res?.data?.user) {
