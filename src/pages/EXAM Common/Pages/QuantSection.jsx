@@ -13,7 +13,7 @@ const QuantSection = ({
   timeForSection = 15 * 60,
   onSectionComplete,
   currentSectionIdx,
-  totalSections
+  totalSections,
 }) => {
   const [question, setQuestion] = useState(null);
   const [selected, setSelected] = useState(null);
@@ -24,35 +24,32 @@ const QuantSection = ({
   const [preTimer, setPreTimer] = useState(60);
   const [submitting, setSubmitting] = useState(false);
   const [sessionIdState, setSessionIdState] = useState(sessionId || null);
-  const [showToast, setShowToast] = useState(false); // ✅ Toast state
+  const [showToast, setShowToast] = useState(false);
 
   const preTimerRef = useRef(null);
   const timerRef = useRef(null);
+  const sectionStartedOnceRef = useRef(false); // ✅ Important fix
 
-  
   useEffect(() => {
-  const handleBeforeUnload = (e) => {
-    e.preventDefault();
-    e.returnValue =
-      "You are not allowed to refresh this page before starting the exam!";
-  };
-  window.addEventListener("beforeunload", handleBeforeUnload);
+    const handleBeforeUnload = (e) => {
+      e.preventDefault();
+      e.returnValue =
+        "You are not allowed to refresh this page before starting the exam!";
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
 
-  // Prevent back navigation
-  window.history.pushState(null, null, window.location.href); // push a dummy state
-  const handlePopState = () => {
-    // Re-push the state to prevent going back
     window.history.pushState(null, null, window.location.href);
-    alert("You are not allowed to go back during the exam!");
-  };
-  window.addEventListener("popstate", handlePopState);
+    const handlePopState = () => {
+      window.history.pushState(null, null, window.location.href);
+      alert("You are not allowed to go back during the exam!");
+    };
+    window.addEventListener("popstate", handlePopState);
 
-  return () => {
-    window.removeEventListener("beforeunload", handleBeforeUnload);
-    window.removeEventListener("popstate", handlePopState);
-  };
-}, []);
-
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, []);
 
   useEffect(() => {
     setSessionIdState(sessionId || null);
@@ -65,6 +62,10 @@ const QuantSection = ({
   };
 
   const startSection = async () => {
+    if (sectionStartedOnceRef.current) return; // ✅ Double call stop
+    sectionStartedOnceRef.current = true;
+    clearInterval(preTimerRef.current);
+
     try {
       const user = JSON.parse(localStorage.getItem("user"));
       if (!user?.email) throw new Error("User not logged in");
@@ -106,15 +107,14 @@ const QuantSection = ({
       setTimeLeft(timeForSection);
     } catch (err) {
       console.error(err);
-      alert(
-        
-          (err.response?.data?.message || err.message)
-      );
+      alert(err.response?.data?.message || err.message);
     }
   };
 
+  // ✅ START COUNTDOWN → auto start only once
   useEffect(() => {
     if (!showInstruction) return;
+
     preTimerRef.current = setInterval(() => {
       setPreTimer((prev) => {
         if (prev <= 1) {
@@ -129,10 +129,11 @@ const QuantSection = ({
     return () => clearInterval(preTimerRef.current);
   }, [showInstruction]);
 
+  // ✅ Main exam timer
   useEffect(() => {
     if (!started) return;
-    clearInterval(timerRef.current);
 
+    clearInterval(timerRef.current);
     timerRef.current = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
@@ -168,7 +169,7 @@ const QuantSection = ({
 
   const handleSubmit = async () => {
     if (selected === null) {
-      setShowToast(true); // ✅ Show toast instead of alert
+      setShowToast(true);
       setTimeout(() => setShowToast(false), 2000);
       return;
     }
@@ -202,15 +203,13 @@ const QuantSection = ({
       }
     } catch (err) {
       console.error(err);
-      alert(
-        "Error submitting answer: " +
-          (err.response?.data?.message || err.message)
-      );
+      alert("Error submitting answer: " + (err.response?.data?.message || err.message));
     } finally {
       setSubmitting(false);
     }
   };
 
+  // ✅ UI remains EXACT SAME
   if (showInstruction) {
     return (
       <>
@@ -259,7 +258,10 @@ const QuantSection = ({
               onClick={startSection}
               className="bg-blue-600 text-white font-semibold text-base py-3 px-6 rounded-md w-full max-w-xs mx-auto block mt-8 hover:bg-blue-800 transition-colors"
             >
-              Begin {sectionTitle} <span><FontAwesomeIcon icon={faArrowRight} beatFade /></span>
+              Begin {sectionTitle}{" "}
+              <span>
+                <FontAwesomeIcon icon={faArrowRight} beatFade />
+              </span>
             </button>
           </div>
         </div>
@@ -270,20 +272,18 @@ const QuantSection = ({
   return (
     <MathJaxContext>
       <div className="bg-gray-100 min-h-screen flex flex-col pb-20">
-        {/* Header with Timer */}
         <header className="w-full bg-blue-600 text-white p-2 px-7 flex justify-between items-center shadow-md text-center font-semibold text-lg">
-         <div>
-           <span className="font-semibold ">
-            {sectionTitle} — Q{questionNumber}
-          </span>
-         </div>
+          <div>
+            <span className="font-semibold">
+              {sectionTitle} — Q{questionNumber}
+            </span>
+          </div>
           <div className="flex items-center gap-2 bg-blue-50 px-4 py-1.5 rounded-full font-semibold text-blue-800 shadow-inner border border-blue-200">
             <span>⏱</span>
             <span className="font-mono">{formatTime(timeLeft)}</span>
           </div>
         </header>
 
-        {/* Question Box */}
         <div className="w-[90%] mx-auto mt-4">
           <div className="mb-6 text-gray-800 text-base sm:text-lg leading-relaxed flex">
             <span className="mr-2 font-semibold">{questionNumber}.</span>
@@ -298,7 +298,7 @@ const QuantSection = ({
               {question.options.map((opt, idx) => (
                 <label
                   key={idx}
-                  className={`w-[50%] rounded-lg  p-3 cursor-pointer flex items-start transition-all duration-200 ${
+                  className={`w-[50%] rounded-lg p-3 cursor-pointer flex items-start transition-all duration-200 ${
                     selected === idx
                       ? "bg-blue-100 border border-blue-500 font-semibold text-blue-800"
                       : "hover:bg-gray-300"
@@ -318,7 +318,6 @@ const QuantSection = ({
           )}
         </div>
 
-        {/* Footer Navigation */}
         <div className="fixed bottom-0 left-0 right-0 bg-white py-4 shadow-[0_-2px_10px_rgba(0,0,0,0.1)] flex justify-center z-[100]">
           <button
             onClick={handleSubmit}
@@ -333,7 +332,6 @@ const QuantSection = ({
           </button>
         </div>
 
-        {/* Toast Alert */}
         {showToast && (
           <div className="fixed bottom-24 right-8 bg-blue-500 text-white p-3 rounded-md shadow-md z-[200]">
             Please select an option before proceeding

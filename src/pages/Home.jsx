@@ -17,18 +17,19 @@ const Home = ({ onLogin }) => {
   };
 
   const internationalExams = [
-    { name: "GMAT", icon: Globe2 },
-    { name: "GRE", icon: Globe2 },
-    { name: "SAT", icon: Globe2 },
-    { name: "TOEFL", icon: Globe2 },
-  ];
+  { name: "GMAT", icon: Globe2, active: true },
+  { name: "GRE", icon: Globe2, active: false },
+  { name: "SAT", icon: Globe2, active: false },
+  { name: "TOEFL", icon: Globe2, active: false },
+];
 
-  const nationalExams = [
-    { name: "CAT", icon: BookOpen },
-    { name: "JEE", icon: BookOpen },
-    { name: "NEET", icon: BookOpen },
-    { name: "CLAT", icon: BookOpen },
-  ];
+const nationalExams = [
+  { name: "CAT", icon: BookOpen, active: false },
+  { name: "JEE", icon: BookOpen, active: false },
+  { name: "NEET", icon: BookOpen, active: false },
+  { name: "CLAT", icon: BookOpen, active: false },
+];
+
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center">
@@ -67,13 +68,19 @@ const Section = ({ title, exams, handleExamClick }) => (
   <div className="mb-10">
     <h3 className="text-lg font-semibold mb-4 text-gray-700">{title}</h3>
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-      {exams.map(({ name, icon: Icon }) => (
+      {exams.map(({ name, icon: Icon, active }) => (
         <button
           key={name}
-          onClick={() => handleExamClick(name)}
-          className="w-full border border-gray-200 bg-white py-4 rounded-lg text-gray-800 font-medium hover:bg-blue-50 hover:border-blue-300 transition shadow-sm flex flex-col items-center justify-center gap-2"
+          onClick={() => active && handleExamClick(name)}
+          disabled={!active}
+          className={`w-full py-4 rounded-lg text-gray-800 font-medium flex flex-col items-center justify-center gap-2 transition shadow-sm
+            ${
+              active
+                ? "bg-white border border-gray-200 hover:bg-blue-50 hover:border-blue-300 cursor-pointer"
+                : "bg-gray-100 border border-gray-200 opacity-70 cursor-not-allowed"
+            }`}
         >
-          <Icon className="text-blue-600" size={24} />
+          <Icon className={active ? "text-blue-600" : "text-blue-500"} size={24} />
           <span>{name}</span>
         </button>
       ))}

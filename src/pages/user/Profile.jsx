@@ -10,8 +10,11 @@ const Profile = () => {
     status: "",
     joiningDate: "",
   });
-const BASE_URL = import.meta.env.VITE_BASE_URL;
+
+  const BASE_URL = import.meta.env.VITE_BASE_URL;
+
   const [isEditing, setIsEditing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // ✅ NEW
 
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -36,6 +39,8 @@ const BASE_URL = import.meta.env.VITE_BASE_URL;
 
   const handleToggleEdit = async () => {
     if (isEditing) {
+      setIsLoading(true); // ✅ Start loading
+
       try {
         const response = await axios.post(
           `${BASE_URL}/website/auth/edit-profile`,
@@ -68,14 +73,16 @@ const BASE_URL = import.meta.env.VITE_BASE_URL;
             })
           );
 
-          alert("Profile updated successfully");
+          alert("Profile updated successfully ✅");
         } else {
-          alert(response.data.message || "Failed to update profile");
+          alert(response.data.message || "Failed to update profile ❌");
         }
       } catch (err) {
         console.error(err);
-        alert("Something went wrong. Profile not updated.");
+        alert("Something went wrong. Profile not updated ❌");
       }
+
+      setIsLoading(false); // ✅ Stop loading
     }
 
     setIsEditing(!isEditing);
@@ -90,15 +97,22 @@ const BASE_URL = import.meta.env.VITE_BASE_URL;
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-4 sm:mb-0">
               My Profile
             </h2>
+
             <button
               onClick={handleToggleEdit}
-              className={`px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg w-full sm:w-auto ${
-                isEditing
+              disabled={isLoading}
+              className={`px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg w-full sm:w-auto
+                ${isEditing
                   ? "bg-blue-600 hover:bg-blue-700 text-white"
-                  : "bg-white border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white"
-              }`}
+                  : "bg-white border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white"}
+                ${isLoading ? "opacity-60 cursor-not-allowed" : ""}
+              `}
             >
-              {isEditing ? "Save Changes" : "Edit Profile"}
+              {isLoading
+                ? "Saving..."
+                : isEditing
+                ? "Save Changes"
+                : "Edit Profile"}
             </button>
           </div>
 

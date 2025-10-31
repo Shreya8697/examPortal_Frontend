@@ -127,49 +127,86 @@ export default function DataInsightReview({ section }) {
         </>
       );
     } else if (q.id === 2) {
-      // TwoPartAnalysis
-      return (
-        <>
-          {q.status === null && <div className="text-end text-red-600 font-semibold mb-4">Unattempt</div>}
-          {renderPassage()}
-          {renderQuestionText()}
-          <div className="mb-6 flex gap-8">
-            {/* Column 1 */}
-            <div className="flex-1">
-              <h4 className="font-bold mb-2 text-gray-900">{q.tableHeadings.column1}</h4>
-              <div className="space-y-2">
-                {q.options.map((opt, i) => {
-                  const isCorrect = i === q.correct?.[0];
-                  const isSelected = i === q.selected?.[0];
-                  let className = "p-2 rounded-lg border transition-all duration-300";
-                  if (isCorrect && isSelected) className += " border-green-500 bg-green-50 shadow-green-200";
-                  else if (isCorrect) className += " border-green-500 bg-green-50 shadow-green-200";
-                  else if (isSelected) className += " border-red-500 bg-red-50 shadow-red-200";
-                  else className += " border-gray-200 hover:bg-gray-100";
-                  return <div key={i} className={className}>{opt}</div>;
-                })}
-              </div>
-            </div>
-            {/* Column 2 */}
-            <div className="flex-1">
-              <h4 className="font-bold mb-2 text-gray-900">{q.tableHeadings.column2}</h4>
-              <div className="space-y-2">
-                {q.options.map((opt, i) => {
-                  const isCorrect = i === q.correct?.[1];
-                  const isSelected = i === q.selected?.[1];
-                  let className = "p-2 rounded-lg border transition-all duration-300";
-                  if (isCorrect && isSelected) className += " border-green-500 bg-green-50 shadow-green-200";
-                  else if (isCorrect) className += " border-green-500 bg-green-50 shadow-green-200";
-                  else if (isSelected) className += " border-red-500 bg-red-50 shadow-red-200";
-                  else className += " border-gray-200 hover:bg-gray-100";
-                  return <div key={i} className={className}>{opt}</div>;
-                })}
-              </div>
-            </div>
+  // TwoPartAnalysis
+  return (
+    <>
+      {q.status === null && (
+        <div className="text-end text-red-600 font-semibold mb-4">Unattempt</div>
+      )}
+
+      {renderPassage()}
+      {renderQuestionText()}
+
+      <div className="mb-6 flex gap-8">
+        {/* Column 1 */}
+        <div className="flex-1">
+          <h4 className="font-bold mb-2 text-gray-900">{q.tableHeadings.column1}</h4>
+          <div className="space-y-2">
+            {q.options.map((opt, i) => {
+              const isCorrect = i === q.correct?.[0];
+              const isSelected = i === q.selected?.[0];
+
+              let className = "p-2 rounded-lg border transition-all duration-300";
+              if (isCorrect && isSelected) className += " border-green-500 bg-green-50 shadow-green-200";
+              else if (isCorrect) className += " border-green-500 bg-green-50 shadow-green-200";
+              else if (isSelected) className += " border-red-500 bg-red-50 shadow-red-200";
+              else className += " border-gray-200 hover:bg-gray-100";
+
+              return (
+                <div key={i} className={className}>
+                  <div className="flex justify-between items-center">
+                    <span>{opt}</span>
+
+                    {/* ✅ Show Correct / Your Answer */}
+                    {isCorrect && isSelected && (
+                      <span className="text-green-600 font-semibold text-sm">Correct</span>
+                    )}
+                    {!isCorrect && isSelected && (
+                      <span className="text-red-600 font-semibold text-sm">Your Answer</span>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
           </div>
-        </>
-      );
-    } else if (q.id === 3) {
+        </div>
+
+        {/* Column 2 */}
+        <div className="flex-1">
+          <h4 className="font-bold mb-2 text-gray-900">{q.tableHeadings.column2}</h4>
+          <div className="space-y-2">
+            {q.options.map((opt, i) => {
+              const isCorrect = i === q.correct?.[1];
+              const isSelected = i === q.selected?.[1];
+
+              let className = "p-2 rounded-lg border transition-all duration-300";
+              if (isCorrect && isSelected) className += " border-green-500 bg-green-50 shadow-green-200";
+              else if (isCorrect) className += " border-green-500 bg-green-50 shadow-green-200";
+              else if (isSelected) className += " border-red-500 bg-red-50 shadow-red-200";
+              else className += " border-gray-200 hover:bg-gray-100";
+
+              return (
+                <div key={i} className={className}>
+                  <div className="flex justify-between items-center">
+                    <span>{opt}</span>
+
+                    {/* ✅ Show Correct / Your Answer */}
+                    {isCorrect && isSelected && (
+                      <span className="text-green-600 font-semibold text-sm">Correct</span>
+                    )}
+                    {!isCorrect && isSelected && (
+                      <span className="text-red-600 font-semibold text-sm">Your Answer</span>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    </>
+  );
+} else if (q.id === 3) {
       // DataSufficiency
       return (
         <>
@@ -219,75 +256,115 @@ export default function DataInsightReview({ section }) {
         </>
       );
     } else if (q.id === 4) {
-      // TableAnalysis
-      return (
-        <>
-          {q.status === null && <div className="text-end text-red-600 font-semibold mb-4">Unattempt</div>}
-          {renderQuestionText()}
-          <div className="mb-4 text-gray-700">
-            <MathJax>
-              <div dangerouslySetInnerHTML={{ __html: q.instructions }} />
-            </MathJax>
-          </div>
-          <div className="mb-6 overflow-x-auto">
-            <table className="min-w-full bg-white border border-gray-300">
-              <thead>
-                <tr>
-                  {q.tableData.headers.map((header, idx) => (
-                    <th key={idx} className="px-4 py-2 border border-gray-300 bg-gray-50 text-left text-sm font-medium text-gray-700">
-                      {header}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {q.tableData.rows.map((row, idx) => (
-                  <tr key={idx}>
-                    {row.map((cell, cellIdx) => (
-                      <td key={cellIdx} className="px-4 py-2 border border-gray-300 text-sm text-gray-900">
-                        {cell}
-                      </td>
-                    ))}
-                  </tr>
+  // TableAnalysis
+  return (
+    <>
+      {q.status === null && (
+        <div className="text-end text-red-600 font-semibold mb-4">Unattempt</div>
+      )}
+
+      {renderQuestionText()}
+
+      <div className="mb-4 text-gray-700">
+        <MathJax>
+          <div dangerouslySetInnerHTML={{ __html: q.instructions }} />
+        </MathJax>
+      </div>
+
+      <div className="mb-6 overflow-x-auto">
+        <table className="min-w-full bg-white border border-gray-300">
+          <thead>
+            <tr>
+              {q.tableData.headers.map((header, idx) => (
+                <th
+                  key={idx}
+                  className="px-4 py-2 border border-gray-300 bg-gray-50 text-left text-sm font-medium text-gray-700"
+                >
+                  {header}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {q.tableData.rows.map((row, idx) => (
+              <tr key={idx}>
+                {row.map((cell, cellIdx) => (
+                  <td
+                    key={cellIdx}
+                    className="px-4 py-2 border border-gray-300 text-sm text-gray-900"
+                  >
+                    {cell}
+                  </td>
                 ))}
-              </tbody>
-            </table>
-          </div>
-          <div className="space-y-4">
-            {q.prompts.map((p, idx) => {
-              const selectedIndex = q.selected?.[idx];
-              const correctIndex = q.correct?.[idx];
-              return (
-                <div key={idx} className="p-4 border rounded-lg shadow-sm bg-gray-50">
-                  <div className="text-gray-700 font-medium mb-2">
-                    <MathJax>
-                      <div dangerouslySetInnerHTML={{ __html: p.statement }} />
-                    </MathJax>
-                  </div>
-                  <div className="flex gap-2">
-                    {p.options.map((opt, i) => {
-                      let className = "px-3 py-1 rounded border";
-                      if (i === correctIndex && i === selectedIndex) className += " border-green-500 bg-green-50";
-                      else if (i === correctIndex) className += " border-green-500 bg-green-50";
-                      else if (i === selectedIndex) className += " border-red-500 bg-red-50";
-                      else className += " border-gray-200";
-                      return <button key={i} className={className}>{opt}</button>;
-                    })}
-                  </div>
-                  {p.explanation && (
-                    <div className="mt-3 bg-blue-50 border-l-4 border-blue-400 p-2 rounded">
-                      <MathJax>
-                        <div dangerouslySetInnerHTML={{ __html: p.explanation }} />
-                      </MathJax>
-                    </div>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="space-y-4">
+        {q.prompts.map((p, idx) => {
+          const selectedIndex = q.selected?.[idx];
+          const correctIndex = q.correct?.[idx];
+
+          return (
+            <div key={idx} className="p-4 border rounded-lg shadow-sm bg-gray-50">
+              <div className="text-gray-700 font-medium mb-2">
+                <MathJax>
+                  <div dangerouslySetInnerHTML={{ __html: p.statement }} />
+                </MathJax>
+              </div>
+
+              {/* Options */}
+              <div className="flex gap-2">
+                {p.options.map((opt, i) => {
+                  let className = "px-3 py-1 rounded border";
+                  if (i === correctIndex && i === selectedIndex)
+                    className += " border-green-500 bg-green-50";
+                  else if (i === correctIndex)
+                    className += " border-green-500 bg-green-50";
+                  else if (i === selectedIndex)
+                    className += " border-red-500 bg-red-50";
+                  else className += " border-gray-200";
+
+                  return (
+                    <button key={i} className={className}>
+                      {opt}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* ✅ Add Correct / Incorrect text */}
+              {selectedIndex !== null && selectedIndex !== undefined && (
+                <div className="mt-2">
+                  {selectedIndex === correctIndex ? (
+                    <span className="text-green-600 font-semibold text-sm">
+                      Correct
+                    </span>
+                  ) : (
+                    <span className="text-red-600 font-semibold text-sm">
+                      Incorrect
+                    </span>
                   )}
                 </div>
-              );
-            })}
-          </div>
-        </>
-      );
-    } else if ([5, 6].includes(q.id)) {
+              )}
+
+              {p.explanation && (
+                <div className="mt-3 bg-blue-50 border-l-4 border-blue-400 p-2 rounded">
+                  <MathJax>
+                    <div dangerouslySetInnerHTML={{ __html: p.explanation }} />
+                  </MathJax>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </>
+  );
+}
+else if ([5, 6].includes(q.id)) {
   // MultiSourceReasoning (ID 5 and 6)
   return (
     <>
@@ -380,71 +457,95 @@ export default function DataInsightReview({ section }) {
   );
 }
  else if (q.id === 7) {
-      // MultiSourceReasoning id 7
-      return (
-        <>
-          {q.status === null && <div className="text-end text-red-600 font-semibold mb-4">Unattempt</div>}
-          <div className="mb-6">
-            <div className="flex border-b border-gray-200">
-              {Object.keys(q.tabs).map((tabName) => (
-                <button key={tabName} className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-indigo-600 border-b-2 border-transparent hover:border-indigo-600">
-                  {tabName}
-                </button>
-              ))}
+  // MultiSourceReasoning id 7
+  return (
+    <>
+      {q.status === null && (
+        <div className="text-end text-red-600 font-semibold mb-4">Unattempt</div>
+      )}
+
+      <div className="mb-6">
+        {/* Tabs */}
+        <div className="flex border-b border-gray-200">
+          {Object.keys(q.tabs).map((tabName) => (
+            <button
+              key={tabName}
+              className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-indigo-600 border-b-2 border-transparent hover:border-indigo-600"
+            >
+              {tabName}
+            </button>
+          ))}
+        </div>
+
+        {/* Tab Content */}
+        <div className="mt-4">
+          {Object.entries(q.tabs).map(([tabName, content]) => (
+            <div key={tabName} className="mb-4">
+              <h4 className="font-bold text-indigo-900">{tabName}</h4>
+              <MathJax>
+                <div dangerouslySetInnerHTML={{ __html: content }} />
+              </MathJax>
             </div>
-            <div className="mt-4">
-              {Object.entries(q.tabs).map(([tabName, content]) => (
-                <div key={tabName} className="mb-4">
-                  <h4 className="font-bold text-indigo-900">{tabName}</h4>
-                  <MathJax>
-                    <div dangerouslySetInnerHTML={{ __html: content }} />
-                  </MathJax>
-                </div>
-              ))}
+          ))}
+        </div>
+      </div>
+
+      {/* Instructions */}
+      <div className="mb-4 text-gray-700">
+        <MathJax>
+          <div dangerouslySetInnerHTML={{ __html: q.instructions }} />
+        </MathJax>
+      </div>
+
+      {/* Options */}
+      <div className="space-y-2">
+        {q.options.map((opt, i) => {
+          // ✅ Base class without animation
+          let className = "p-3 rounded-lg border border-gray-200";
+
+          let label = "";
+
+          if (i === q.correct && i === q.selected) {
+            className = "p-3 rounded-lg border border-green-500 bg-green-50 shadow-green-200";
+            label = "Your Answer (Correct)";
+          } else if (i === q.correct) {
+            className = "p-3 rounded-lg border border-green-500 bg-green-50 shadow-green-200";
+            label = "Correct Answer";
+          } else if (i === q.selected) {
+            className = "p-3 rounded-lg border border-red-500 bg-red-50 shadow-red-200";
+            label = "Your Answer";
+          } else {
+            // ✅ Hover पर ही animation
+            className += " hover:bg-gray-100 hover:transition-all hover:duration-200";
+          }
+
+          return (
+            <div key={i} className={className}>
+              <div className="flex justify-between items-start">
+                <MathJax>
+                  <div dangerouslySetInnerHTML={{ __html: opt }} />
+                </MathJax>
+
+                {label && (
+                  <span
+                    className={`text-xs font-semibold px-2 py-1 rounded-full ${
+                      i === q.correct
+                        ? "bg-green-200 text-green-800"
+                        : "bg-red-400 text-red-800"
+                    }`}
+                  >
+                    {label}
+                  </span>
+                )}
+              </div>
             </div>
-          </div>
-          <div className="mb-4 text-gray-700">
-            <MathJax>
-              <div dangerouslySetInnerHTML={{ __html: q.instructions }} />
-            </MathJax>
-          </div>
-          <div className="space-y-2">
-            {q.options.map((opt, i) => {
-              let className = "p-3 rounded-lg border transition-all duration-300";
-              let label = "";
-              if (i === q.correct && i === q.selected) {
-                className += " border-green-500 bg-green-50 shadow-green-200";
-                label = "Your Answer (Correct)";
-              } else if (i === q.correct) {
-                className += " border-green-500 bg-green-50 shadow-green-200";
-                label = "Correct Answer";
-              } else if (i === q.selected) {
-                className += " border-red-500 bg-red-50 shadow-red-200";
-                label = "Your Answer";
-              } else {
-                className += " border-gray-200 hover:bg-gray-100";
-              }
-              return (
-                <div key={i} className={className}>
-                  <div className="flex justify-between items-start">
-                    <MathJax>
-                      <div dangerouslySetInnerHTML={{ __html: opt }} />
-                    </MathJax>
-                    {label && (
-                      <span className={`text-xs font-semibold px-2 py-1 rounded-full ${
-                        i === q.correct ? "bg-green-200 text-green-800" : "bg-red-400 text-red-800"
-                      }`}>
-                        {label}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </>
-      );
-    } else {
+          );
+        })}
+      </div>
+    </>
+  );
+}
+ else {
       // fallback
       return <div>Question type not supported.</div>;
     }

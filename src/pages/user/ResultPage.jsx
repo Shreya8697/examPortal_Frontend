@@ -126,7 +126,7 @@ export default function ResultPage() {
   return (
     <MathJaxContext>
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-6 sm:py-10 px-4">
-        <div className="max-w-7xl mx-auto bg-white shadow-xl rounded-2xl sm:rounded-3xl p-4 sm:p-8 border border-gray-100">
+        <div className="max-w-7xl mx-auto bg-white shadow-xl  rounded-[10px] p-4 sm:p-8 border border-gray-100">
           {/* Header */}
           <div className="flex items-center gap-2 sm:gap-4 mb-6 sm:mb-10">
             <button
