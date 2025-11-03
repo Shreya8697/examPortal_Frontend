@@ -247,7 +247,6 @@ const QuestionRenderer = ({ question, selected = {}, setSelected }) => {
   // --------------------------
   // ID 4: TableAnalysis
   // --------------------------
-
   if (question.id === 4) {
     return (
       //<div className="w-full max-w-6xl mx-auto mt-6 px-3 sm:px-6 py-5 bg-white rounded-2xl ">
@@ -352,112 +351,115 @@ const QuestionRenderer = ({ question, selected = {}, setSelected }) => {
   // --------------------------
   // ID 5 & 6: MultiSourceReasoning (Tabs)
   // --------------------------
-  if (question.id === 5 || question.id === 6) {
-    const [activeTab, setActiveTab] = useState(
-      Object.keys(question.tabs || {})[0] || ""
-    );
+if (question.id === 5 || question.id === 6) {
+  const [activeTab, setActiveTab] = useState(
+    Object.keys(question.tabs || {})[0] || ""
+  );
 
-    return (
-      <div className="w-full m-0 p-4 sm:p-6 bg-white rounded-2xl">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* LEFT COLUMN: Question + Tabs */}
-          <div className="space-y-4">
-            {/* Question Text */}
-            {question.text && (
-              <p className="text-gray-900 font-semibold text-sm sm:text-base md:text-lg leading-snug mb-2">
-                {question.text}
-              </p>
-            )}
+  return (
+    <div className="w-full m-0 p-4 sm:p-6 bg-white rounded-2xl">
 
-            {/* Tabs Section */}
-            <div className="flex flex-wrap gap-1.5 sm:gap-2">
-              {Object.keys(question.tabs || {}).map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={`px-2.5 py-1.5 sm:px-3 sm:py-1.5 rounded-md font-medium text-xs sm:text-sm transition-all duration-200 shadow-sm ${
-                    tab === activeTab
-                      ? "bg-blue-600 text-white shadow-md border border-blue-600"
-                      : "bg-gray-100 text-gray-800 border border-gray-200 hover:bg-blue-50 hover:text-blue-600"
-                  }`}
-                >
-                  {tab}
-                </button>
-              ))}
-            </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* LEFT COLUMN: Question + Tabs */}
+        <div className="space-y-4">
+          {/* Question Text */}
+          {question.text && (
+            <p className="text-gray-900 font-semibold text-sm sm:text-base md:text-lg leading-snug mb-2">
+            {question.text}
+          </p>
+          )}
 
-            {/* Tab Content */}
-            <div
-              className="bg-gray-50 border border-gray-200 rounded-xl p-4 sm:p-5 text-gray-800 leading-relaxed shadow-sm text-sm sm:text-base"
-              dangerouslySetInnerHTML={{ __html: question.tabs[activeTab] }}
-            />
-          </div>
+          {/* Tabs Section */}
+          <div className="flex flex-wrap gap-1.5 sm:gap-2">
+  {Object.keys(question.tabs || {}).map((tab) => (
+    <button
+      key={tab}
+      onClick={() => setActiveTab(tab)}
+      className={`px-2.5 py-1.5 sm:px-3 sm:py-1.5 rounded-md font-medium text-xs sm:text-sm transition-all duration-200 shadow-sm ${
+        tab === activeTab
+          ? "bg-blue-600 text-white shadow-md border border-blue-600"
+          : "bg-gray-100 text-gray-800 border border-gray-200 hover:bg-blue-50 hover:text-blue-600"
+      }`}
+    >
+      {tab}
+    </button>
+  ))}
+</div>
 
-          {/* RIGHT COLUMN: Prompts */}
-          <div className="space-y-5 mt-2">
-            {question.prompts?.map((p, idx) =>
-              p.rows ? (
-                <div
-                  key={idx}
-                  className="bg-gray-50 rounded-xl border border-gray-200 p-4 sm:p-5 shadow-sm"
-                >
-                  {/* Prompt Title */}
-                  <p className="font-semibold text-gray-900 mb-3 text-base sm:text-lg">
-                    {p.statement}
-                  </p>
 
-                  {/* Table Section */}
-                  <div className="overflow-x-auto">
-                    <table className="w-full border-collapse text-sm sm:text-base rounded-lg overflow-hidden">
-                      <tbody>
-                        {p.rows.map((row, rIdx) => (
-                          <tr
-                            key={rIdx}
-                            className={`transition duration-200 ${
-                              rIdx % 2 === 0
-                                ? "bg-white hover:bg-gray-50"
-                                : "bg-gray-50 hover:bg-gray-100"
-                            }`}
-                          >
-                            {/* Left Column */}
-                            <td className="border border-gray-200 px-3 sm:px-4 py-2 sm:py-3 font-medium text-gray-800 w-1/2">
-                              {row.statement}
-                            </td>
+          {/* Tab Content */}
+          <div
+            className="bg-gray-50 border border-gray-200 rounded-xl p-4 sm:p-5 text-gray-800 leading-relaxed shadow-sm text-sm sm:text-base"
+            dangerouslySetInnerHTML={{ __html: question.tabs[activeTab] }}
+          />
+        </div>
 
-                            {/* Options Column */}
-                            <td className="border border-gray-200 px-3 sm:px-4 py-2 sm:py-3">
-                              <div className="flex flex-wrap gap-2 sm:gap-3">
-                                {row.options.map((opt, oIdx) => {
-                                  const selected = getValue(rIdx) === oIdx;
-                                  return (
-                                    <button
-                                      key={oIdx}
-                                      onClick={() => handleSelect(rIdx, oIdx)}
-                                      className={`px-3 sm:px-5 py-1.5 sm:py-2 rounded-lg border-2 text-sm sm:text-base font-medium transition-all duration-200 ${
-                                        selected
-                                          ? "bg-blue-600 text-white border-blue-600 shadow-md"
-                                          : "bg-white text-gray-700 border-gray-300 hover:bg-blue-50 hover:border-blue-400 hover:text-blue-700"
-                                      }`}
-                                    >
-                                      {opt}
-                                    </button>
-                                  );
-                                })}
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
+        {/* RIGHT COLUMN: Prompts */}
+        <div className="space-y-5 mt-2">
+          {question.prompts?.map((p, idx) =>
+            p.rows ? (
+              <div
+                key={idx}
+                className="bg-gray-50 rounded-xl border border-gray-200 p-4 sm:p-5 shadow-sm"
+              >
+                {/* Prompt Title */}
+                <p className="font-semibold text-gray-900 mb-3 text-base sm:text-lg">
+                  {p.statement}
+                </p>
+
+                {/* Table Section */}
+                <div className="overflow-x-auto">
+                  <table className="w-full border-collapse text-sm sm:text-base rounded-lg overflow-hidden">
+                    <tbody>
+                      {p.rows.map((row, rIdx) => (
+                        <tr
+                          key={rIdx}
+                          className={`transition duration-200 ${
+                            rIdx % 2 === 0
+                              ? "bg-white hover:bg-gray-50"
+                              : "bg-gray-50 hover:bg-gray-100"
+                          }`}
+                        >
+                          {/* Left Column */}
+                          <td className="border border-gray-200 px-3 sm:px-4 py-2 sm:py-3 font-medium text-gray-800 w-1/2">
+                            {row.statement}
+                          </td>
+
+                          {/* Options Column */}
+                          <td className="border border-gray-200 px-3 sm:px-4 py-2 sm:py-3">
+                            <div className="flex flex-wrap gap-2 sm:gap-3">
+                              {row.options.map((opt, oIdx) => {
+                                const selected = getValue(rIdx) === oIdx;
+                                return (
+                                  <button
+                                    key={oIdx}
+                                    onClick={() => handleSelect(rIdx, oIdx)}
+                                    className={`px-3 sm:px-5 py-1.5 sm:py-2 rounded-lg border-2 text-sm sm:text-base font-medium transition-all duration-200 ${
+                                      selected
+                                        ? "bg-blue-600 text-white border-blue-600 shadow-md"
+                                        : "bg-white text-gray-700 border-gray-300 hover:bg-blue-50 hover:border-blue-400 hover:text-blue-700"
+                                    }`}
+                                  >
+                                    {opt}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
-              ) : null
-            )}
-          </div>
+              </div>
+            ) : null
+          )}
         </div>
       </div>
-    );
-  }
+    </div>
+  );
+}
+
 
   // --------------------------
   // ID 7: MultiSourceReasoning (Tabs + Radio Options)
