@@ -16,12 +16,11 @@ const QuestionRenderer = ({ question, selected = {}, setSelected }) => {
   };
 
   // --------------------------
-  // ID 1: GraphicsInterpretation
+  // ID 1: GraphicsInterpretation sahi hai
   // --------------------------
   if (question.id === 1) {
   return (
-    <div className="flex flex-col xl:flex-row gap-1 bg-gray-100 rounded-lg p-4">
-      
+    <div className="flex flex-col xl:flex-row gap-1 bg-gray-100 rounded-lg p-0">
       {/* LEFT SECTION */}
       <div className="xl:w-1/2 bg-white p-5 shadow-md flex flex-col justify-between">
         
@@ -97,7 +96,7 @@ const QuestionRenderer = ({ question, selected = {}, setSelected }) => {
       <p className="font-bold mb-6 text-gray-900 text-xl">{question.text}</p>
 
       <div className="overflow-x-auto flex justify-center">
-        <table className="w-full max-w-2xl border border-gray-300 border-collapse text-sm bg-white shadow-lg rounded-lg overflow-hidden">
+        <table className="w-full max-w-lg border border-gray-300 border-collapse text-sm bg-white shadow-lg rounded-lg overflow-hidden">
           <thead>
             <tr className="bg-gradient-to-r from-blue-500 to-blue-600 text-white">
               {Object.keys(question.tableHeadings || {}).map((colKey, idx) => (
@@ -164,10 +163,9 @@ const QuestionRenderer = ({ question, selected = {}, setSelected }) => {
   // --------------------------
  if (question.id === 3) {
   return (
-    <div className="w-full max-w-5xl mx-auto mt-6 px-3 sm:px-6 py-5 bg-white rounded-2xl  ">
-      
+      <div className="w-full py-5 bg-white rounded-2xl p-3">
       {/* Main Grid → Mobile vertical, PC side-by-side */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
         {/* LEFT: Question + Instructions */}
         <div>
@@ -189,7 +187,7 @@ const QuestionRenderer = ({ question, selected = {}, setSelected }) => {
         </div>
 
         {/* RIGHT: Options */}
-        <div className="flex flex-col gap-3 sm:gap-4 mt-1">
+        <div className="flex flex-col gap-2 sm:gap-4 mt-0">
           {question.options.map((opt, idx) => {
             const isSelected = getValue(0) === idx;
             return (
