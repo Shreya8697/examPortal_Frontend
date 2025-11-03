@@ -226,11 +226,10 @@ const QuestionRenderer = ({ question, selected = {}, setSelected }) => {
 // --------------------------
 if (question.id === 4) {
   return (
-    <div className="w-full max-w-6xl mx-auto mt-6 px-3 sm:px-6 py-5 bg-white rounded-2xl ">
-
+    //<div className="w-full max-w-6xl mx-auto mt-6 px-3 sm:px-6 py-5 bg-white rounded-2xl ">
+    <div className="w-full mt-6 py-5 bg-white rounded-2xl p-6">
       {/* GRID for PC */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
         {/* LEFT: Question + Instructions + Table */}
         <div>
           {/* Question Text */}
@@ -243,49 +242,50 @@ if (question.id === 4) {
           {/* Instructions */}
           {question.instructions && (
             <div
-              className="bg-blue-50 border-l-4 border-blue-500 text-gray-800 p-3 sm:p-4 rounded-xl shadow-sm text-sm sm:text-base mb-5"
+              className="bg-blue-50 border-l-4 border-blue-500 text-gray-800 p-3 sm:p-4 rounded-xl shadow-sm text-sm sm:text-base mb-2"
               dangerouslySetInnerHTML={{ __html: question.instructions }}
             />
           )}
 
           {/* Table Section */}
-          <div className="overflow-x-auto rounded-xl border border-gray-200 shadow-sm">
-            <table className="w-full border-collapse text-sm sm:text-base bg-white">
-              <thead className="bg-gradient-to-r from-blue-500 to-blue-600 text-white">
-                <tr>
-                  {question.tableData.headers.map((h, i) => (
-                    <th
-                      key={i}
-                      className="px-3 sm:px-4 py-2 sm:py-3 text-left font-semibold uppercase tracking-wide border-r border-blue-400 last:border-r-0"
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {question.tableData.rows.map((row, i) => (
-                  <tr
-                    key={i}
-                    className={`transition duration-200 ${
-                      i % 2 === 0
-                        ? "bg-white hover:bg-gray-50"
-                        : "bg-gray-50 hover:bg-gray-100"
-                    }`}
-                  >
-                    {row.map((cell, j) => (
-                      <td
-                        key={j}
-                        className="px-3 sm:px-4 py-2 sm:py-3 text-gray-800 border-t border-gray-200"
-                      >
-                        {cell}
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-sm w-11/12 sm:w-4/5 mx-auto">
+  <table className="w-full border-collapse text-xs sm:text-sm bg-white">
+    <thead className="bg-gradient-to-r from-blue-500 to-blue-600 text-white">
+      <tr>
+        {question.tableData.headers.map((h, i) => (
+          <th
+            key={i}
+            className="px-2 sm:px-3 py-1.5 sm:py-2 text-left font-semibold uppercase tracking-wide border-r border-blue-400 last:border-r-0"
+          >
+            {h}
+          </th>
+        ))}
+      </tr>
+    </thead>
+    <tbody>
+      {question.tableData.rows.map((row, i) => (
+        <tr
+          key={i}
+          className={`transition duration-200 ${
+            i % 2 === 0
+              ? "bg-white hover:bg-gray-50"
+              : "bg-gray-50 hover:bg-gray-100"
+          }`}
+        >
+          {row.map((cell, j) => (
+            <td
+              key={j}
+              className="px-2 sm:px-3 py-1.5 sm:py-2 text-gray-800 border-t border-gray-200"
+            >
+              {cell}
+            </td>
+          ))}
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
         </div>
 
         {/* RIGHT: Prompts Section */}
