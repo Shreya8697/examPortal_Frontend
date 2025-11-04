@@ -359,7 +359,7 @@ const DataInsightsSection = ({
         </header>
 
         {/* Question */}
-        <div className="mx-auto mt-0 mb-10 rounded-xl shadow-md px-0 py-0 bg-white">
+        <div className="w-screen h-screen bg-white overflow-hidden m-0 p-0">
           {currentQ && (
             <QuestionRenderer
               question={currentQ}

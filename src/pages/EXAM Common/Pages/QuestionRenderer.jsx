@@ -394,18 +394,17 @@ const QuestionRenderer = ({ question, selected = {}, setSelected }) => {
           </div>
 
           {/* RIGHT COLUMN: Prompts */}
-          <div className="space-y-5 mt-2">
+          <div className="space-y-5 mt-16.5">
             {question.prompts?.map((p, idx) =>
               p.rows ? (
                 <div
                   key={idx}
-                  className="bg-gray-50 rounded-xl border border-gray-200 p-4 sm:p-5 shadow-sm"
+                  className="bg-gray-50 rounded-xl border border-gray-200 p-4 sm:p-5 shadow-sm mt-3.5"
                 >
                   {/* Prompt Title */}
-                  <p className="font-semibold text-gray-900 mb-3 text-base sm:text-lg">
-                    {p.statement}
-                  </p>
-
+                  <p className="font-semibold text-gray-700 mb-2 text-sm sm:text-base">
+                  {p.statement}
+                </p>
                   {/* Table Section */}
                   <div className="overflow-x-auto">
                     <table className="w-full border-collapse text-sm sm:text-base rounded-lg overflow-hidden">
@@ -468,7 +467,7 @@ const QuestionRenderer = ({ question, selected = {}, setSelected }) => {
     );
 
     return (
-      <div className="w-full max-w-6xl mx-auto mt-6 p-4 sm:p-6 bg-white rounded-2xl space-y-6">
+      <div className="w-full max-w-6xl mx-auto mt-6 p- sm:p-6 bg-white rounded-2xl space-y-6">
         {/* Question Text */}
         {question.text && (
           <p className="text-gray-900 font-semibold text-base sm:text-lg md:text-xl leading-relaxed">
