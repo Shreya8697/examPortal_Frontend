@@ -262,7 +262,8 @@
           </header>
 
           {/* Passage + Question */}
-          <div className="w-[90%] mx-auto mt-4 flex flex-col md:flex-row gap-6">
+          <div className="w-full mt-0 flex flex-col md:flex-row gap-6 p-3">
+
             {/* Left: Passage */}
            {question?.passage && (
   <div className="flex-1 bg-gradient-to-br from-white to-gray-50 border border-gray-200 rounded-xl shadow-lg p-5 relative overflow-hidden">
