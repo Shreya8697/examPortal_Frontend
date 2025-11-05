@@ -202,7 +202,7 @@ const QuestionRenderer = ({ question, selected = {}, setSelected }) => {
             {question.instructions?.map((ins, idx) => (
               <div
                 key={idx}
-                className="text-gray-800 text-sm sm:text-base bg-gray-50 p-3 sm:p-4 rounded-xl border border-gray-200 mb-3"
+                className="text-gray-800 text-sm sm:text-base bg-gray-50 p-3 sm:p-3 rounded-xl border border-gray-200 mb-3"
               >
                 <span className="font-bold text-blue-600 mr-1">
                   ({idx + 1}).
@@ -213,33 +213,34 @@ const QuestionRenderer = ({ question, selected = {}, setSelected }) => {
           </div>
 
           {/* RIGHT: Options */}
-          <div className="flex flex-col gap-2 sm:gap-4 mt-0">
-            {question.options.map((opt, idx) => {
-              const isSelected = getValue(0) === idx;
-              return (
-                <label
-                  key={idx}
-                  className={`flex items-start gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 text-sm sm:text-base
-                  ${
-                    isSelected
-                      ? "bg-green-50 border-green-500 text-green-900 font-semibold shadow-sm"
-                      : "bg-white border-gray-300 hover:bg-blue-50 hover:border-blue-400"
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    name={`q-${question.id}`}
-                    checked={isSelected}
-                    onChange={() => handleSelect(0, idx)}
-                    className="accent-green-600 mt-1 w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0"
-                  />
-                  <div className="flex-1 leading-snug sm:leading-normal text-gray-900">
-                    <MathJax inline={false}>{opt}</MathJax>
-                  </div>
-                </label>
-              );
-            })}
-          </div>
+          <div className="flex flex-col gap-1 sm:gap-2 mt-0 mt-2.5">
+  {question.options.map((opt, idx) => {
+    const isSelected = getValue(0) === idx;
+    return (
+      <label
+        key={idx}
+        className={`flex items-start gap-2 sm:gap-3 p-2 sm:p-3 rounded-xl border-2 cursor-pointer transition-all duration-200 text-xs sm:text-sm
+        ${
+          isSelected
+            ? "bg-green-50 border-green-500 text-green-900 font-semibold shadow-sm"
+            : "bg-white border-gray-300 hover:bg-blue-50 hover:border-blue-400"
+        }`}
+      >
+        <input
+          type="radio"
+          name={`q-${question.id}`}
+          checked={isSelected}
+          onChange={() => handleSelect(0, idx)}
+          className="accent-green-600 mt-1 w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0"
+        />
+        <div className="flex-1 leading-snug sm:leading-normal text-gray-900">
+          <MathJax inline={false}>{opt}</MathJax>
+        </div>
+      </label>
+    );
+  })}
+</div>
+
         </div>
       </div>
     );
