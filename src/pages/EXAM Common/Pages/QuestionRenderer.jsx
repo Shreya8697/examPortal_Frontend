@@ -18,6 +18,7 @@ const QuestionRenderer = ({ question, selected = {}, setSelected }) => {
   // --------------------------
   // ID 1: GraphicsInterpretation sahi hai
   // --------------------------
+
   if (question.id === 1) {
     return (
       <div className="flex flex-col xl:flex-row gap-1 bg-gray-100 rounded-lg p-0">
@@ -467,7 +468,8 @@ const QuestionRenderer = ({ question, selected = {}, setSelected }) => {
     );
 
     return (
-      <div className="w-full max-w-6xl mx-auto mt-6 p- sm:p-6 bg-white rounded-2xl space-y-6">
+      <div className="w-full mx-auto mt-6 p-0 bg-white rounded-2xl space-y-6 p-3">
+
         {/* Question Text */}
         {question.text && (
           <p className="text-gray-900 font-semibold text-base sm:text-lg md:text-xl leading-relaxed">
@@ -504,9 +506,9 @@ const QuestionRenderer = ({ question, selected = {}, setSelected }) => {
           </div>
 
           {/* RIGHT SECTION (OPTIONS) */}
-          <div className="space-y-4">
+          <div className="mt-15 space-y-3">
             {question.instructions && (
-              <p className="text-gray-700 text-sm sm:text-base md:text-lg font-medium leading-relaxed bg-blue-50 border-l-4 border-blue-600 p-3 rounded-xl">
+              <p className="text-gray-700 text-xs sm:text-base md:text-base font-medium leading-relaxed bg-blue-50 border-l-4 border-blue-600 p-3 rounded-lg">
                 {question.instructions}
               </p>
             )}
@@ -516,21 +518,23 @@ const QuestionRenderer = ({ question, selected = {}, setSelected }) => {
 
               return (
                 <label
-                  key={idx}
-                  className={`w-full rounded-xl p-3 sm:p-4 cursor-pointer flex items-start gap-3 transition-all duration-300 border-2 ${
-                    isSelected
-                      ? "bg-blue-100 border-blue-600 font-semibold text-blue-800 shadow-sm"
-                      : "bg-white border-gray-300 hover:bg-gray-100 hover:border-blue-400"
-                  }`}
-                >
+  key={idx}
+  className={`w-full rounded-xl p-2 sm:p-3 cursor-pointer flex items-start gap-2 transition-all duration-300 border-2 ${
+    isSelected
+      ? "bg-blue-100 border-blue-600 font-semibold text-blue-800 shadow-sm"
+      : "bg-white border-gray-300 hover:bg-gray-100 hover:border-blue-400"
+  }`}
+>
+
                   <input
-                    type="radio"
-                    name={`q-${question.id}`}
-                    checked={isSelected}
-                    onChange={() => handleSelect(0, idx)}
-                    className="accent-blue-600 mt-1 w-4 h-4 sm:w-5 sm:h-5"
-                  />
-                  <div className="flex-1 text-sm sm:text-base md:text-lg leading-snug">
+  type="radio"
+  name={`q-${question.id}`}
+  checked={isSelected}
+  onChange={() => handleSelect(0, idx)}
+  className="accent-blue-600 mt-1 w-3 h-3 sm:w-3 sm:h-3"
+/>
+
+                  <div className="flex-1 text-xs sm:text-base md:text-lg leading-snug">
                     <MathJax inline={false}>{opt}</MathJax>
                   </div>
                 </label>
