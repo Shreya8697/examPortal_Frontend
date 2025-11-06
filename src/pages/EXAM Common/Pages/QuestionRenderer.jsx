@@ -214,33 +214,32 @@ const QuestionRenderer = ({ question, selected = {}, setSelected }) => {
 
           {/* RIGHT: Options */}
           <div className="flex flex-col gap-1 sm:gap-2 mt-0 mt-2.5">
-  {question.options.map((opt, idx) => {
-    const isSelected = getValue(0) === idx;
-    return (
-      <label
-        key={idx}
-        className={`flex items-start gap-2 sm:gap-3 p-2 sm:p-3 rounded-xl border-2 cursor-pointer transition-all duration-200 text-xs sm:text-sm
+            {question.options.map((opt, idx) => {
+              const isSelected = getValue(0) === idx;
+              return (
+                <label
+                  key={idx}
+                  className={`flex items-start gap-2 sm:gap-3 p-2 sm:p-3 rounded-xl border-2 cursor-pointer transition-all duration-200 text-xs sm:text-sm
         ${
           isSelected
             ? "bg-green-50 border-green-500 text-green-900 font-semibold shadow-sm"
             : "bg-white border-gray-300 hover:bg-blue-50 hover:border-blue-400"
         }`}
-      >
-        <input
-          type="radio"
-          name={`q-${question.id}`}
-          checked={isSelected}
-          onChange={() => handleSelect(0, idx)}
-          className="accent-green-600 mt-1 w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0"
-        />
-        <div className="flex-1 leading-snug sm:leading-normal text-gray-900">
-          <MathJax inline={false}>{opt}</MathJax>
-        </div>
-      </label>
-    );
-  })}
-</div>
-
+                >
+                  <input
+                    type="radio"
+                    name={`q-${question.id}`}
+                    checked={isSelected}
+                    onChange={() => handleSelect(0, idx)}
+                    className="accent-green-600 mt-1 w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0"
+                  />
+                  <div className="flex-1 leading-snug sm:leading-normal text-gray-900">
+                    <MathJax inline={false}>{opt}</MathJax>
+                  </div>
+                </label>
+              );
+            })}
+          </div>
         </div>
       </div>
     );
@@ -405,8 +404,8 @@ const QuestionRenderer = ({ question, selected = {}, setSelected }) => {
                 >
                   {/* Prompt Title */}
                   <p className="font-semibold text-gray-700 mb-2 text-sm sm:text-base">
-                  {p.statement}
-                </p>
+                    {p.statement}
+                  </p>
                   {/* Table Section */}
                   <div className="overflow-x-auto">
                     <table className="w-full border-collapse text-sm sm:text-base rounded-lg overflow-hidden">
@@ -470,7 +469,6 @@ const QuestionRenderer = ({ question, selected = {}, setSelected }) => {
 
     return (
       <div className="w-full mx-auto mt-6 p-0 bg-white rounded-2xl space-y-6 p-3">
-
         {/* Question Text */}
         {question.text && (
           <p className="text-gray-900 font-semibold text-base sm:text-lg md:text-xl leading-relaxed">
@@ -519,21 +517,20 @@ const QuestionRenderer = ({ question, selected = {}, setSelected }) => {
 
               return (
                 <label
-  key={idx}
-  className={`w-full rounded-xl p-2 sm:p-3 cursor-pointer flex items-start gap-2 transition-all duration-300 border-2 ${
-    isSelected
-      ? "bg-blue-100 border-blue-600 font-semibold text-blue-800 shadow-sm"
-      : "bg-white border-gray-300 hover:bg-gray-100 hover:border-blue-400"
-  }`}
->
-
+                  key={idx}
+                  className={`w-full rounded-xl p-2 sm:p-3 cursor-pointer flex items-start gap-2 transition-all duration-300 border-2 ${
+                    isSelected
+                      ? "bg-blue-100 border-blue-600 font-semibold text-blue-800 shadow-sm"
+                      : "bg-white border-gray-300 hover:bg-gray-100 hover:border-blue-400"
+                  }`}
+                >
                   <input
-  type="radio"
-  name={`q-${question.id}`}
-  checked={isSelected}
-  onChange={() => handleSelect(0, idx)}
-  className="accent-blue-600 mt-1 w-3 h-3 sm:w-3 sm:h-3"
-/>
+                    type="radio"
+                    name={`q-${question.id}`}
+                    checked={isSelected}
+                    onChange={() => handleSelect(0, idx)}
+                    className="accent-blue-600 mt-1 w-3 h-3 sm:w-3 sm:h-3"
+                  />
 
                   <div className="flex-1 text-xs sm:text-base md:text-lg leading-snug">
                     <MathJax inline={false}>{opt}</MathJax>

@@ -292,11 +292,11 @@
               </div>
 
               {question?.options?.length > 0 && (
-                <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-2">
                   {question.options.map((opt, idx) => (
                     <label
                       key={idx}
-                      className={`w-full md:w-[80%] rounded-lg p-3 cursor-pointer flex items-start transition-all duration-200 ${
+                      className={`w-full md:w-[80%] rounded-lg p-2 cursor-pointer flex items-start transition-all duration-200 ${
                         selected === idx
                           ? "bg-blue-100 border border-blue-500 font-semibold text-blue-800"
                           : "hover:bg-gray-300"

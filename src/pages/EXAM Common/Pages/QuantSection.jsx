@@ -294,7 +294,7 @@ const QuantSection = ({
           </div>
 
           {question?.options?.length > 0 && (
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-1">
               {question.options.map((opt, idx) => (
                 <label
                   key={idx}
