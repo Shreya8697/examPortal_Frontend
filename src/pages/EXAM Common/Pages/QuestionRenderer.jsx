@@ -213,7 +213,7 @@ const QuestionRenderer = ({ question, selected = {}, setSelected }) => {
           </div>
 
           {/* RIGHT: Options */}
-          <div className="flex flex-col gap-1 sm:gap-2 mt-0 mt-2.5">
+          <div className="flex flex-col gap-1 sm:gap-2 mt-0">
             {question.options.map((opt, idx) => {
               const isSelected = getValue(0) === idx;
               return (
@@ -252,7 +252,7 @@ const QuestionRenderer = ({ question, selected = {}, setSelected }) => {
   if (question.id === 4) {
     return (
       //<div className="w-full max-w-6xl mx-auto mt-6 px-3 sm:px-6 py-5 bg-white rounded-2xl ">
-      <div className="w-full mt-3 py-5 bg-white rounded-2xl p-6">
+      <div className="w-full mt-2 py-5 bg-white rounded-2xl p-6">
         {/* GRID for PC */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* LEFT: Question + Instructions + Table */}
@@ -313,38 +313,57 @@ const QuestionRenderer = ({ question, selected = {}, setSelected }) => {
           </div>
 
           {/* RIGHT: Prompts Section */}
-          <div className="space-y-5 mt-2">
-            {question.prompts?.map((p, idx) => (
-              <div
-                key={idx}
-                className="p-4 sm:p-5 bg-gray-50 rounded-xl border border-gray-200 shadow-sm"
-              >
-                <p className="font-semibold text-gray-900 text-base sm:text-lg mb-3 leading-snug">
-                  {p.statement}
-                </p>
+<div className="space-y-5 mt-2 border-l border-gray-300 pl-4">
+  <table className="w-full table-auto border border-gray-200">
+    <tbody>
+      {question.prompts?.map((p, idx) => (
+        <tr key={idx} className="border-t border-gray-200">
+          {/* Question Column */}
+          <td className="p-1 sm:p-5 text-left font-semibold text-gray-800 text-base sm:text-lg leading-snug border-r border-gray-200">
+            {p.statement}
+          </td>
 
-                <div className="flex flex-wrap gap-3 sm:gap-4">
-                  {p.options.map((opt, oIdx) => {
-                    const selected = getValue(idx) === oIdx;
-                    return (
-                      <button
-                        key={oIdx}
-                        onClick={() => handleSelect(idx, oIdx)}
-                        className={`px-4 sm:px-5 py-2 sm:py-2.5 rounded-lg border-2 text-sm sm:text-base font-medium transition-all duration-200
-                        ${
-                          selected
-                            ? "bg-green-500 text-white border-green-500 shadow-md"
-                            : "bg-white text-gray-700 border-gray-300 hover:bg-blue-50 hover:border-blue-400 hover:shadow-sm"
-                        }`}
-                      >
-                        {opt}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            ))}
-          </div>
+          {/* "Yes" Option Column */}
+          <td className="p-1 sm:p-5 border-r border-gray-200">
+            <div className="flex flex-wrap gap-1 sm:gap-2 justify-center">
+              {p.options[0] && (
+                <button
+                  onClick={() => handleSelect(idx, 0)}
+                  className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg border-2 text-xs sm:text-sm font-medium transition-all duration-200
+                    ${getValue(idx) === 0
+                      ? "bg-green-500 text-white border-green-500 shadow-md"
+                      : "bg-white text-gray-700 border-gray-300 hover:bg-blue-50 hover:border-blue-400 hover:shadow-sm"
+                    }`}
+                >
+                  {p.options[0]}
+                </button>
+              )}
+            </div>
+          </td>
+
+          {/* "No" Option Column */}
+          <td className="p-1 sm:p-5">
+            <div className="flex flex-wrap gap-1 sm:gap-2 justify-center">
+              {p.options[1] && (
+                <button
+                  onClick={() => handleSelect(idx, 1)}
+                  className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg border-2 text-xs sm:text-sm font-medium transition-all duration-200
+                    ${getValue(idx) === 1
+                      ? "bg-green-500 text-white border-green-500 shadow-md"
+                      : "bg-white text-gray-700 border-gray-300 hover:bg-blue-50 hover:border-blue-400 hover:shadow-sm"
+                    }`}
+                >
+                  {p.options[1]}
+                </button>
+              )}
+            </div>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
         </div>
       </div>
     );
@@ -468,7 +487,7 @@ const QuestionRenderer = ({ question, selected = {}, setSelected }) => {
     );
 
     return (
-      <div className="w-full mx-auto mt-6 p-0 bg-white rounded-2xl space-y-6 p-3">
+      <div className="w-full mx-auto mt-6 p-0 bg-white rounded-2xl space-y-6">
         {/* Question Text */}
         {question.text && (
           <p className="text-gray-900 font-semibold text-base sm:text-lg md:text-xl leading-relaxed">

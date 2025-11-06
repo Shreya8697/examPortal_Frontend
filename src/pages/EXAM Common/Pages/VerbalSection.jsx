@@ -266,22 +266,21 @@
 
             {/* Left: Passage */}
            {question?.passage && (
-  <div className="flex-1 bg-gradient-to-br from-white to-gray-50 border border-gray-200 rounded-xl shadow-lg p-5 relative overflow-hidden">
-    <div className="absolute top-0 left-0 w-full h-1 bg-blue-600 rounded-t-xl" />
-    
-    <div className="flex items-center justify-between mb-3">
-      <h3 className="font-semibold text-gray-800 text-lg tracking-wide">Passage</h3>
-      <span className="text-sm text-gray-500 italic">Read Carefully</span>
-    </div>
+              <div className="flex-1 border border-gray-200 rounded-xl shadow-lg p-5 relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-full h-1 bg-blue-600 rounded-t-xl" /> 
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="font-semibold text-gray-800 text-lg tracking-wide">Passage</h3>
+                  <span className="text-sm text-gray-500 italic">Read Carefully</span>
+                </div>
 
-    <div className="overflow-auto max-h-[400px] pr-2 passage-scroll">
-      <div
-        className="text-gray-800 text-justify leading-relaxed text-[15px] whitespace-pre-wrap font-serif first-line:pl-4"
-        dangerouslySetInnerHTML={{ __html: question.passage }}
-      />
-    </div>
-  </div>
-)}
+                <div className="overflow-auto max-h-[400px] pr-2 passage-scroll">
+                  <div
+                    className="text-gray-800 text-justify leading-relaxed text-[15px] whitespace-pre-wrap font-serif first-line:pl-4"
+                    dangerouslySetInnerHTML={{ __html: question.passage }}
+                  />
+                </div>
+              </div>
+            )}
 
 
             {/* Right: Question + Options */}
